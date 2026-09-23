@@ -10,7 +10,7 @@ info "Checking your container lifecycle work..."
 require_docker
 
 check_msg "you created the 'db' container" \
-  "docker run -d --name db -e POSTGRES_PASSWORD=password postgres:16" \
+  "docker run -d --name db -e POSTGRES_PASSWORD=password postgres:18" \
   container_did db create
 
 check_msg "you stopped 'db'" \

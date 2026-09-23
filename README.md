@@ -21,7 +21,7 @@ On good wifi (not the venue's), the night before:
 2. **Pre-pull the images** so we're not all downloading them at once on the day:
    ```
    docker pull elixir
-   docker pull postgres:16
+   docker pull postgres:18
    ```
 3. **Clone this repo:**
    ```
