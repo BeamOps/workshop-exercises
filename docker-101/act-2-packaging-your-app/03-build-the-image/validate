@@ -1,6 +1,0 @@
-#!/usr/bin/env bash
-# Validates: act-2-packaging-your-app/03-build-the-image
-ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
-source "$ROOT/bin/lib.sh"
-
-todo "image tag exists; a container runs from it; the published port responds"

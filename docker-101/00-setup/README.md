@@ -31,7 +31,17 @@ mise install     # installs the pinned Erlang + Elixir
 Already have Elixir another way (asdf, system package)? That's fine, the check
 below only cares that `elixir` and `mix` are on your PATH, not how they got there.
 
-## 3. Pre-pull the images
+## 3. Generate the starter app
+
+Act 2 and Act 3 all build on one small Phoenix app. Generate it now, on good wifi —
+it fetches dependencies and lives here gitignored, reused by every exercise.
+
+Follow the steps in [`../starter-app/README.md`](../starter-app/README.md): activate
+mise, install Hex/rebar and the pinned `phx_new`, then run `mix phx.new starter_app
+--no-mailer --no-dashboard --install`. Use the name `starter_app` exactly — the checks
+rely on it.
+
+## 4. Pre-pull the images
 
 So we're not all downloading at once on the day:
 

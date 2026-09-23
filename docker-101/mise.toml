@@ -8,5 +8,5 @@
 # These versions match the Docker base images the exercises use, so a release you
 # build on your host behaves the same inside a container.
 [tools]
-erlang = "28.5"
-elixir = "1.19.5-otp-28"
+erlang = "29.1.1"
+elixir = "1.20.4-otp-29"

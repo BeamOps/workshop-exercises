@@ -33,4 +33,16 @@ check_msg "mix is available" \
   "comes with elixir; via mise: run 'mise install' in docker-101/" \
   command -v mix
 
+# Phoenix project generator installed (needed to create the starter app). A fresh
+# Elixir has no Hex/rebar, so this also fails until 'mix local.hex' has run.
+check_msg "the Phoenix generator (phx_new) is installed" \
+  "run: mix local.hex --force && mix archive.install hex phx_new 1.8.14 --force" \
+  mix help phx.new
+
+# Starter app generated (reused across Act 2 & 3). We only check it's here; the
+# release and Docker exercises verify the rest.
+check_msg "the starter app is generated (docker-101/starter-app/starter_app)" \
+  "from docker-101/starter-app run: mix phx.new starter_app --no-mailer --no-dashboard" \
+  test -f "$ROOT/docker-101/starter-app/starter_app/mix.exs"
+
 finish

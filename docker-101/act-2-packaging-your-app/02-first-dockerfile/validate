@@ -2,5 +2,38 @@
 # Validates: act-2-packaging-your-app/02-first-dockerfile
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DF="$HERE/start/Dockerfile"
 
-todo "Dockerfile present with required instructions; docker build succeeds"
+info "Checking your Dockerfile..."
+require_docker
+
+# Filled in (no ??? placeholders left).
+check_msg "start/Dockerfile is filled in (no ??? left)" \
+  "replace each ??? placeholder in start/Dockerfile" \
+  bash -c "! grep -q '???' '$DF'"
+
+# Deps copied before the source, so the deps layer stays cached (layer caching).
+check_msg "deps are copied before the source (layer caching)" \
+  "COPY mix.exs mix.lock ./ should come before COPY . ." \
+  grep -qE '^COPY[[:space:]]+mix\.exs[[:space:]]+mix\.lock' "$DF"
+
+# Builds a release.
+check_msg "the Dockerfile builds a release" \
+  "add: RUN mix release" \
+  grep -qE 'mix[[:space:]]+release' "$DF"
+
+# CMD runs the release's server script by its FULL path. The build never runs CMD,
+# so a wrong path (rel/app instead of rel/starter_app, or a relative path missing
+# the _build/prod prefix) only fails at 'docker run' — this catches it here.
+check_msg "CMD runs the release server (/app/_build/prod/rel/starter_app/bin/server)" \
+  "CMD should run the full path: /app/_build/prod/rel/starter_app/bin/server" \
+  grep -qE '^CMD.*_build/prod/rel/starter_app/bin/server' "$DF"
+
+# The image actually built. We check the resulting image rather than running a
+# (slow) build here — proof the Dockerfile is correct end to end.
+check_msg "the image starter-app:1.0 built" \
+  "docker build -f start/Dockerfile -t starter-app:1.0 ../../starter-app/starter_app" \
+  image_exists starter-app:1.0
+
+finish

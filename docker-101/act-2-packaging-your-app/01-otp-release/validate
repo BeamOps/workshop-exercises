@@ -3,4 +3,23 @@
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-todo "_build/prod/rel/<app>/bin/<app> exists; the release boots and reports its version"
+info "Checking your OTP release..."
+
+APP="$ROOT/docker-101/starter-app/starter_app"
+BIN="$APP/_build/prod/rel/starter_app/bin/starter_app"
+
+check_msg "the starter app exists" \
+  "generate it in 00-setup: mix phx.new starter_app --no-mailer --no-dashboard" \
+  test -f "$APP/mix.exs"
+
+check_msg "a prod release was built (_build/prod/rel/starter_app/bin/starter_app)" \
+  "from the app run: mix phx.gen.release && MIX_ENV=prod mix release" \
+  test -x "$BIN"
+
+# 'version' prints the release name + version from release metadata without booting
+# the app, so it needs no database, secrets, or other runtime config.
+check_msg "the release binary reports its version" \
+  "the release should run: bin/starter_app version" \
+  "$BIN" version
+
+finish
