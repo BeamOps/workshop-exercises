@@ -9,20 +9,21 @@ source "$ROOT/bin/lib.sh"
 info "Checking your container lifecycle work..."
 require_docker
 
-check_msg "you created the 'db' container" \
-  "docker run -d --name db -e POSTGRES_PASSWORD=password postgres:18" \
+# Hints deliberately say WHAT is missing, not the command, figure that part out.
+check_msg "you created a 'db' container" \
+  "no 'db' container seen this session" \
   container_did db create
 
 check_msg "you stopped 'db'" \
-  "docker stop db" \
+  "'db' was never stopped" \
   container_did db stop
 
 check_msg "you opened a shell inside 'db'" \
-  "docker exec -it db bash" \
+  "you haven't opened a shell in 'db'" \
   container_did db exec
 
 check_msg "you removed 'db'" \
-  "docker rm -f db" \
+  "'db' still exists — the lifecycle isn't finished" \
   container_did db destroy
 
 finish
