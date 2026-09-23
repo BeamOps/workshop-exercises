@@ -24,24 +24,30 @@ mount path; we stick with 17 here for the classic layout.) No starter files.
    docker rm -f db
    docker run -d --name db -e POSTGRES_PASSWORD=password postgres:17
    ```
-4. Look for your table, it's **gone** (`ERROR: relation "notes" does not exist`):
+4. Look for your table, it's **gone**:
    ```
    docker exec db psql -U postgres -c "SELECT * FROM notes;"
    ```
-5. Run `./validate`, it confirms there's no persistence yet, and points you to the next step.
+   You'll get `ERROR: relation "notes" does not exist`. The data died with the container.
+5. Clean up: `docker rm -f db`
 
 ## Now make it survive (named volume)
 
-6. Remove the no-volume container and run Postgres with a named volume `db-data`, then recreate the table:
+6. Run Postgres with a named volume `db-data`:
    ```
-   docker rm -f db
    docker run -d --name db -e POSTGRES_PASSWORD=password -v db-data:/var/lib/postgresql/data postgres:17
+   ```
+7. Create the table again:
+   ```
    docker exec db psql -U postgres -c "CREATE TABLE notes (msg text); INSERT INTO notes VALUES ('it survived');"
    ```
-7. Remove the container and start a new one with the **same** volume, the row is still there:
+8. Remove the container and start a new one with the **same** volume:
    ```
    docker rm -f db
    docker run -d --name db -e POSTGRES_PASSWORD=password -v db-data:/var/lib/postgresql/data postgres:17
+   ```
+9. This time the row is still there:
+   ```
    docker exec db psql -U postgres -c "SELECT * FROM notes;"
    ```
    The data lives in the `db-data` volume, not the container.
@@ -50,16 +56,17 @@ mount path; we stick with 17 here for the classic layout.) No starter files.
 
 A bind mount does the same job, but **you** choose the host location.
 
-8. Run a second Postgres with a bind mount to a local `pgdata` folder:
-   ```
-   docker run -d --name db2 -e POSTGRES_PASSWORD=password -v ./pgdata:/var/lib/postgresql/data postgres:17
-   ```
-9. Look inside `./pgdata` — Postgres's data files are right there on your machine:
-   ```
-   ls pgdata
-   ```
+10. Run a second Postgres with a bind mount to a local `pgdata` folder:
+    ```
+    docker run -d --name db2 -e POSTGRES_PASSWORD=password -v ./pgdata:/var/lib/postgresql/data postgres:17
+    ```
+11. Look inside `./pgdata` — Postgres's data files are right there on your machine:
+    ```
+    ls pgdata
+    ```
+    With a bind mount **you** pick the host path; with a named volume Docker owns it.
 
-Leave both `db` and `db2` running.
+Leave both `db` and `db2` running for the check.
 
 ## Check your work
 

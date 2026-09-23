@@ -29,10 +29,6 @@ _no()  {
   return 0
 }
 
-# not <cmd...> — negate a check (passes when the command would fail). Handy for
-# "this should NOT be true" checks, e.g. `check_msg "..." "..." not pg_has_value ...`.
-not() { ! "$@"; }
-
 # check_msg "description" "hint shown on failure" <command...>
 # Passes if the command exits 0.
 check_msg() {
