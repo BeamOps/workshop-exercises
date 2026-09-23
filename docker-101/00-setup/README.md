@@ -19,12 +19,12 @@ Install Docker and make sure it's **running** (the whale icon / daemon is up).
 ## 2. Elixir (via mise)
 
 You only need this for the OTP release exercise, but set it up now. We use
-[mise](https://mise.jdx.dev) to install the exact versions this repo pins in
-[`../mise.toml`](../mise.toml).
+[mise](https://mise.jdx.dev) to install the exact versions the exercises repo
+pins in its `mise.toml`.
 
 ```
 # install mise: https://mise.jdx.dev/getting-started.html
-cd ..            # the docker-101 directory (where mise.toml lives)
+cd docker-101    # where mise.toml lives
 mise install     # installs the pinned Erlang + Elixir
 ```
 
@@ -42,7 +42,10 @@ docker pull postgres:16
 
 ## Check your work
 
+From the exercises repo:
+
 ```
+cd docker-101/00-setup
 ./validate
 ```
 
