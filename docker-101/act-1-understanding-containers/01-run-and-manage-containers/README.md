@@ -13,18 +13,18 @@ We use a Postgres container. No starter files, you work with the `docker` CLI.
    ```
 2. Confirm it's running with `docker ps`
 3. View its logs with `docker logs db`
-4. Open a bash shell inside it, then try `psql -U postgres` and `\l` to list databases:
-   ```
-   docker exec -it db bash
-   # inside the container: psql -U postgres   then  \l   then  \q
-   ```
-5. Exit the shell
-6. Stop the container, then confirm it's stopped but still exists with `docker ps -a`:
+4. Stop the container, then confirm it's stopped but still exists with `docker ps -a`:
    ```
    docker stop db
    docker ps -a
    ```
-7. Start it again with `docker start db`
+5. Start it again with `docker start db`
+6. Now that it's running again, open a bash shell inside it and try `psql -U postgres` and `\l` to list databases (you can only `exec` into a *running* container):
+   ```
+   docker exec -it db bash
+   # inside the container: psql -U postgres   then  \l   then  \q
+   ```
+7. Exit the shell
 8. Remove it with `docker rm -f db`
 
 ## Check your work
