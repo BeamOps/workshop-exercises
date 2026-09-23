@@ -54,13 +54,19 @@ mount path; we stick with 17 here for the classic layout.) No starter files.
 
 ## Bind mount — data on your own filesystem
 
-10. (Optional) Run Postgres with a bind mount to a local folder instead:
+A bind mount does the same job, but **you** choose the host location.
+
+10. Run a second Postgres with a bind mount to a local `pgdata` folder:
     ```
     docker run -d --name db2 -e POSTGRES_PASSWORD=password -v ./pgdata:/var/lib/postgresql/data postgres:17
     ```
-    Look inside `./pgdata` — Postgres's data files are right there on your machine. With a bind mount **you** pick the host path; with a named volume Docker owns it.
+11. Look inside `./pgdata` — Postgres's data files are right there on your machine:
+    ```
+    ls pgdata
+    ```
+    With a bind mount **you** pick the host path; with a named volume Docker owns it.
 
-Leave the named-volume `db` running for the check.
+Leave both `db` and `db2` running for the check.
 
 ## Check your work
 
@@ -73,4 +79,5 @@ Leave the named-volume `db` running for the check.
 ```
 docker rm -f db db2
 docker volume rm db-data
+rm -rf pgdata
 ```

@@ -10,8 +10,16 @@ check_msg "the named volume 'db-data' exists" \
   "run Postgres with -v db-data:/var/lib/postgresql/data" \
   volume_exists db-data
 
+check_msg "'db' is actually using the 'db-data' volume" \
+  "run db with the volume mounted, not just create the volume" \
+  container_uses_volume db db-data
+
 check_msg "your data survived (the 'notes' row is still there)" \
   "create a table with a row, remove the container, then restart it with the same volume" \
   pg_has_value db "SELECT msg FROM notes" "it survived"
+
+check_msg "'db2' uses a bind mount to a local folder" \
+  "run db2 with -v ./pgdata:/var/lib/postgresql/data" \
+  container_bind_mounts db2 pgdata
 
 finish

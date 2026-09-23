@@ -103,6 +103,23 @@ container_publishes() {
 # volume_exists <name> — is there a Docker named volume with this name?
 volume_exists() { docker volume inspect "$1" >/dev/null 2>&1; }
 
+# container_uses_volume <container> <volume> — is <container> actually mounting
+# the named <volume>? (so we know data really lives in the volume, not ephemeral
+# container storage)
+container_uses_volume() {
+  local out
+  out="$(docker inspect "$1" --format '{{range .Mounts}}{{.Name}} {{end}}' 2>/dev/null)"
+  grep -qw "$2" <<<"$out"
+}
+
+# container_bind_mounts <container> <host-path-substring> — is <container> using
+# a bind mount whose host path matches? (a local folder, not a Docker volume)
+container_bind_mounts() {
+  local out
+  out="$(docker inspect "$1" --format '{{range .Mounts}}{{.Type}}:{{.Source}} {{end}}' 2>/dev/null)"
+  grep -q "bind:.*$2" <<<"$out"
+}
+
 # network_exists <name> — is there a Docker network with this name?
 network_exists() { docker network inspect "$1" >/dev/null 2>&1; }
 
