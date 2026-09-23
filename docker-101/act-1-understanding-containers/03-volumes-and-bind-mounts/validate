@@ -3,4 +3,19 @@
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-todo "container has the expected bind mount; a local edit is visible inside the container"
+info "Checking your volumes work..."
+require_docker
+
+check_msg "the named volume 'db-data' exists" \
+  "run Postgres with -v db-data:/var/lib/postgresql/data" \
+  volume_exists db-data
+
+check_msg "'db' is running" \
+  "start Postgres again using the same volume" \
+  container_running db
+
+check_msg "your data survived (the 'persisted' database is still there)" \
+  "create a database, remove the container, then restart it with the same volume" \
+  pg_has_db db persisted
+
+finish

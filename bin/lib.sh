@@ -90,6 +90,27 @@ container_did() {
 # http_ok <url> — succeeds if the URL responds 2xx/3xx (needs curl)
 http_ok() { curl -fsS -o /dev/null "$1"; }
 
+# volume_exists <name> — is there a Docker named volume with this name?
+volume_exists() { docker volume inspect "$1" >/dev/null 2>&1; }
+
+# network_exists <name> — is there a Docker network with this name?
+network_exists() { docker network inspect "$1" >/dev/null 2>&1; }
+
+# network_has_container <network> <container> — is <container> attached to <network>?
+network_has_container() {
+  local out
+  out="$(docker network inspect "$1" --format '{{range .Containers}}{{.Name}} {{end}}' 2>/dev/null)"
+  grep -qw "$2" <<<"$out"
+}
+
+# pg_has_db <container> <dbname> — does the Postgres in <container> have <dbname>?
+# (capture then grep a here-string, see container_did for why not a pipe to grep -q)
+pg_has_db() {
+  local out
+  out="$(docker exec "$1" psql -U postgres -lqt 2>/dev/null | cut -d'|' -f1)"
+  grep -qw "$2" <<<"$out"
+}
+
 # ran_command <extended-regex> — best-effort: did the user run a matching
 # command, according to their shell history? Reads the common history files.
 # CAVEAT: shells don't always flush history to disk immediately (plain bash

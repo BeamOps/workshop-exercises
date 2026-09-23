@@ -12,8 +12,8 @@ surfaces** (slide, web module, exercise) per `WORKSHOP-MODEL.md` and the recipe 
 ### Act 1 — Understanding containers
 - [x] **What is Docker?** (`01-what-is-docker`, concept, no exercise)
 - [x] **Run & manage containers** (`02-run-and-manage-containers`) → `act-1/01-run-and-manage-containers`
-- [ ] **Ports & networking** (part of `03-ports-networking-persistence`) → `act-1/02-ports-and-networking` _(stub)_
-- [ ] **Volumes & bind mounts** (part of `03-ports-networking-persistence`) → `act-1/03-volumes-and-bind-mounts` _(stub)_
+- [x] **Ports & networking** (part of `03-ports-networking-persistence`) → `act-1/02-ports-and-networking`
+- [x] **Volumes & bind mounts** (part of `03-ports-networking-persistence`) → `act-1/03-volumes-and-bind-mounts`
 
 ### Act 2 — Packaging your app
 - [ ] **OTP releases** → `act-2/01-otp-release` _(stub)_

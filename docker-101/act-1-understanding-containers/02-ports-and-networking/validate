@@ -3,4 +3,25 @@
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-todo "a container publishing the expected port exists; localhost:PORT responds; two containers on different host ports"
+info "Checking your ports & networking work..."
+require_docker
+
+# Part 1 — ports
+check_msg "http://localhost:4000 responds" \
+  "nothing is serving on port 4000 yet" \
+  http_ok http://localhost:4000
+
+check_msg "a second container responds on http://localhost:4001" \
+  "run another container on a different host port" \
+  http_ok http://localhost:4001
+
+# Part 2 — networking (a shared user-defined network is what gives name resolution)
+check_msg "the 'app-net' network exists" \
+  "create a user-defined network" \
+  network_exists app-net
+
+check_msg "'db' is attached to 'app-net'" \
+  "run the database on the app-net network" \
+  network_has_container app-net db
+
+finish
