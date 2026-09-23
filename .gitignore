@@ -1,0 +1,21 @@
+# Elixir / Phoenix build artifacts (exercises contain Phoenix app copies)
+/**/_build/
+/**/deps/
+/**/*.ez
+/**/erl_crash.dump
+*.beam
+
+# Node / assets
+/**/node_modules/
+/**/priv/static/assets/
+
+# Secrets and local env
+.env
+.env.*
+!.env.example
+
+# OS / editor cruft
+.DS_Store
+*.swp
+.idea/
+.vscode/

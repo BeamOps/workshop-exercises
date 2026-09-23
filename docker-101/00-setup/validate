@@ -1,0 +1,36 @@
+#!/usr/bin/env bash
+# Validates: docker-101 / 00-setup  (OS-agnostic: checks capabilities, not how
+# anything was installed)
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+info "Checking you're ready for Docker 101..."
+
+# Docker installed + daemon reachable
+require_docker
+
+# Docker can actually pull and run a container end to end
+check_msg "docker can run a container" \
+  "run: docker run hello-world" \
+  docker run --rm hello-world
+
+# Images pre-pulled so the workshop doesn't stall on downloads
+check_msg "the 'elixir' image is pulled" \
+  "run: docker pull elixir" \
+  image_exists elixir
+
+check_msg "the 'postgres:16' image is pulled" \
+  "run: docker pull postgres:16" \
+  image_exists postgres:16
+
+# Elixir toolchain on PATH (needed for the OTP release exercise, host-side).
+# We don't care HOW it was installed, only that it's reachable.
+check_msg "elixir is available" \
+  "install mise (https://mise.jdx.dev), then from docker-101/ run: mise install" \
+  command -v elixir
+
+check_msg "mix is available" \
+  "comes with elixir; via mise: run 'mise install' in docker-101/" \
+  command -v mix
+
+finish

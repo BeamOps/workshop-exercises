@@ -1,0 +1,12 @@
+# Pinned toolchain for the Docker 101 exercises.
+#
+# You only need this for the OTP release exercise (act 2), which builds a release
+# on your host. Install mise (https://mise.jdx.dev), then from this directory run:
+#
+#   mise install
+#
+# These versions match the Docker base images the exercises use, so a release you
+# build on your host behaves the same inside a container.
+[tools]
+erlang = "28.5"
+elixir = "1.19.5-otp-28"

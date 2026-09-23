@@ -1,0 +1,6 @@
+#!/usr/bin/env bash
+# Validates: act-1-understanding-containers/02-ports-and-networking
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+todo "a container publishing the expected port exists; localhost:PORT responds; two containers on different host ports"

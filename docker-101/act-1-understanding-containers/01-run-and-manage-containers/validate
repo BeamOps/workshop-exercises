@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# Validates: act-1 / 01-run-and-manage-containers
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+info "Checking your container lifecycle work..."
+require_docker
+
+check_msg "a container named 'workshop-shell' exists" \
+  "create it: docker run -d --name workshop-shell elixir sleep infinity" \
+  container_exists workshop-shell
+
+check_msg "'workshop-shell' is running" \
+  "start it: docker start workshop-shell" \
+  container_running workshop-shell
+
+check_msg "'workshop-shell' is based on the elixir image" \
+  "it should be run from the 'elixir' image" \
+  container_uses_image workshop-shell elixir
+
+finish
