@@ -1,25 +1,47 @@
 #!/usr/bin/env bash
 # Validates: act-1-understanding-containers/03-volumes-and-bind-mounts
+#
+# Phase-aware: the exercise has you watch data die without a volume, then persist
+# it with one. Run ./validate after each part, it detects which phase you're in
+# by whether 'db' is mounting the db-data volume.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
 info "Checking your volumes work..."
 require_docker
 
-check_msg "the named volume 'db-data' exists" \
-  "run Postgres with -v db-data:/var/lib/postgresql/data" \
-  volume_exists db-data
+if ! container_running db; then
+  check_msg "the 'db' container is running" \
+    "start Postgres to begin (Part 1: no volume)" \
+    false
+  finish
+fi
 
-check_msg "'db' is actually using the 'db-data' volume" \
-  "run db with the volume mounted, not just create the volume" \
-  container_uses_volume db db-data
+if container_uses_volume db db-data; then
+  # ---- Part 2: with a volume, data persists ----
+  check_msg "the named volume 'db-data' exists" \
+    "run Postgres with -v db-data:/var/lib/postgresql/data" \
+    volume_exists db-data
 
-check_msg "your data survived (the 'notes' row is still there)" \
-  "create a table with a row, remove the container, then restart it with the same volume" \
-  pg_has_value db "SELECT msg FROM notes" "it survived"
+  check_msg "'db' is actually using the 'db-data' volume" \
+    "run db with the volume mounted, not just create the volume" \
+    container_uses_volume db db-data
 
-check_msg "'db2' uses a bind mount to a local folder" \
-  "run db2 with -v ./pgdata:/var/lib/postgresql/data" \
-  container_bind_mounts db2 pgdata
+  check_msg "your data survived (the 'notes' row is still there)" \
+    "create a table with a row, remove the container, then restart with the same volume" \
+    pg_has_value db "SELECT msg FROM notes" "it survived"
 
-finish
+  check_msg "'db2' uses a bind mount to a local folder" \
+    "run db2 with -v ./pgdata:/var/lib/postgresql/data" \
+    container_bind_mounts db2 pgdata
+
+  finish
+else
+  # ---- Part 1: no volume, the data should NOT survive ----
+  check_msg "without a volume, the 'notes' table is gone (data didn't survive)" \
+    "on a fresh no-volume 'db' the table shouldn't exist, remove and restart to watch it vanish" \
+    not pg_has_value db "SELECT msg FROM notes" "it survived"
+
+  printf '\n%s→ That is the problem: no volume, no persistence. Now recreate db with -v db-data:/var/lib/postgresql/data, do the bind-mount step, and run ./validate again.%s\n' "$_DIM" "$_RESET"
+  exit 2
+fi
