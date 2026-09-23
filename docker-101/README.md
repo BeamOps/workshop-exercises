@@ -6,6 +6,11 @@ self-check.
 
 The exercises follow the three acts of the workshop.
 
+## Before you start
+
+Confirm your machine is ready: work through [`00-setup`](00-setup/) and get a
+green `./validate` before starting the exercises below.
+
 ## Act 1 — Understanding containers
 
 | # | Exercise | Goal |
