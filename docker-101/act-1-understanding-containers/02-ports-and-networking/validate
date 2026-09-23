@@ -6,14 +6,15 @@ source "$ROOT/bin/lib.sh"
 info "Checking your ports & networking work..."
 require_docker
 
-# Part 1 — ports
-check_msg "http://localhost:4000 responds" \
-  "nothing is serving on port 4000 yet" \
-  http_ok http://localhost:4000
+# Part 1 — ports (check the exercise's own containers publish the ports, so an
+# unrelated process already on 4000 doesn't give a false pass)
+check_msg "the 'app' container is published on port 4000" \
+  "run nginx named app, publishing 4000" \
+  container_publishes app 4000
 
-check_msg "a second container responds on http://localhost:4001" \
-  "run another container on a different host port" \
-  http_ok http://localhost:4001
+check_msg "the 'app-2' container is published on port 4001" \
+  "run a second container on a different host port" \
+  container_publishes app-2 4001
 
 # Part 2 — networking: prove name resolution actually works on the user-defined
 # network by pinging 'db' by name from a throwaway container on it.

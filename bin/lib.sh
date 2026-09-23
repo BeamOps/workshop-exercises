@@ -90,6 +90,16 @@ container_did() {
 # http_ok <url> — succeeds if the URL responds 2xx/3xx (needs curl)
 http_ok() { curl -fsS -o /dev/null "$1"; }
 
+# container_publishes <name> <host-port> — is a running container named exactly
+# <name> publishing that host port? Checking the container (not just "something
+# responds on the port") avoids a false pass when an unrelated process, e.g. a
+# Phoenix dev server, already holds the port.
+container_publishes() {
+  local out
+  out="$(docker ps --filter "name=^${1}$" --format '{{.Ports}}' 2>/dev/null)"
+  grep -q ":${2}->" <<<"$out"
+}
+
 # volume_exists <name> — is there a Docker named volume with this name?
 volume_exists() { docker volume inspect "$1" >/dev/null 2>&1; }
 
