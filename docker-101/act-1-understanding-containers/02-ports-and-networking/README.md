@@ -3,7 +3,8 @@
 **Goal:** publish a container's port so you can reach it from your browser, and
 connect containers on a network so they reach each other by name.
 
-We use `nginx` (as the app) and `postgres:18` (as the db). No starter files.
+We use `nginx` (as the app), `postgres:18` (as the db), and `busybox` (a tiny
+image with a `ping` tool). No starter files.
 
 ## Part 1 — Ports
 
@@ -20,19 +21,26 @@ We use `nginx` (as the app) and `postgres:18` (as the db). No starter files.
 
 ## Part 2 — Networking
 
-5. Create a user-defined network:
+Containers only resolve each other by name on a **user-defined** network. Let's prove it.
+
+5. Run Postgres named `db` on the default network for now:
    ```
+   docker run -d --name db -e POSTGRES_PASSWORD=password postgres:18
+   ```
+6. Try to reach it by name from another container. This **fails** with `bad address 'db'`, the default network gives no name resolution:
+   ```
+   docker run --rm busybox ping -c1 db
+   ```
+7. Create a user-defined network and reconnect `db` to it:
+   ```
+   docker rm -f db
    docker network create app-net
-   ```
-6. Run Postgres on it, named `db` (no `-p` needed):
-   ```
    docker run -d --name db --network app-net -e POSTGRES_PASSWORD=password postgres:18
    ```
-7. From a throwaway container on the same network, reach `db` by name:
+8. Ping `db` by name from a container on the same network. Now it **works**:
    ```
-   docker run --rm --network app-net postgres:18 psql -h db -U postgres -c '\l'
+   docker run --rm --network app-net busybox ping -c1 db
    ```
-   You should see the list of databases. No port was published, `db` resolved by name because both containers share `app-net`.
 
 Leave `app`, `app-2`, and `db` running for the check.
 

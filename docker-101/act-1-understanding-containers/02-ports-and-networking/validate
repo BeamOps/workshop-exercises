@@ -15,13 +15,14 @@ check_msg "a second container responds on http://localhost:4001" \
   "run another container on a different host port" \
   http_ok http://localhost:4001
 
-# Part 2 — networking (a shared user-defined network is what gives name resolution)
+# Part 2 — networking: prove name resolution actually works on the user-defined
+# network by pinging 'db' by name from a throwaway container on it.
 check_msg "the 'app-net' network exists" \
   "create a user-defined network" \
   network_exists app-net
 
-check_msg "'db' is attached to 'app-net'" \
-  "run the database on the app-net network" \
-  network_has_container app-net db
+check_msg "'db' is reachable by name on 'app-net'" \
+  "run the database on app-net so containers there can resolve it by name" \
+  can_reach app-net db
 
 finish

@@ -3,7 +3,8 @@
 **Goal:** make a database's data survive its container being removed (named
 volume), and see the same data on your own filesystem (bind mount).
 
-We use `postgres:17`. No starter files.
+We use `postgres:17`. (Postgres 18 moved where it stores data, which changes the
+mount path; we'll stick with 17 here for the classic layout.) No starter files.
 
 ## Named volume — data survives removal
 
@@ -11,9 +12,9 @@ We use `postgres:17`. No starter files.
    ```
    docker run -d --name db -e POSTGRES_PASSWORD=password -v db-data:/var/lib/postgresql/data postgres:17
    ```
-2. Create a database, so there's something to lose:
+2. Create a table with a row, so there's real data to lose:
    ```
-   docker exec db createdb -U postgres persisted
+   docker exec db psql -U postgres -c "CREATE TABLE notes (msg text); INSERT INTO notes VALUES ('it survived');"
    ```
 3. Remove the container entirely:
    ```
@@ -23,11 +24,11 @@ We use `postgres:17`. No starter files.
    ```
    docker run -d --name db -e POSTGRES_PASSWORD=password -v db-data:/var/lib/postgresql/data postgres:17
    ```
-5. Confirm your `persisted` database is still there:
+5. Confirm your row is still there:
    ```
-   docker exec db psql -U postgres -c '\l'
+   docker exec db psql -U postgres -c "SELECT * FROM notes;"
    ```
-   The data survived because it lives in the `db-data` volume, not the container.
+   You should see `it survived`. The data lives in the `db-data` volume, not the container.
 
 ## Bind mount — data on your own filesystem
 

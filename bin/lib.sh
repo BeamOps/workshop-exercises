@@ -103,12 +103,27 @@ network_has_container() {
   grep -qw "$2" <<<"$out"
 }
 
+# can_reach <network> <name> — from a throwaway container on <network>, does
+# <name> resolve and respond to ping? (proves name resolution actually works)
+can_reach() {
+  docker run --rm --network "$1" busybox ping -c1 -W2 "$2" >/dev/null 2>&1
+}
+
 # pg_has_db <container> <dbname> — does the Postgres in <container> have <dbname>?
 # (capture then grep a here-string, see container_did for why not a pipe to grep -q)
 pg_has_db() {
   local out
   out="$(docker exec "$1" psql -U postgres -lqt 2>/dev/null | cut -d'|' -f1)"
   grep -qw "$2" <<<"$out"
+}
+
+# pg_has_value <container> <sql> <expected> — run <sql> in the Postgres in
+# <container> and check the result contains <expected>. Lets us verify real data
+# (e.g. a row) survived, not just that a database exists.
+pg_has_value() {
+  local out
+  out="$(docker exec "$1" psql -U postgres -tAc "$2" 2>/dev/null)"
+  grep -q "$3" <<<"$out"
 }
 
 # ran_command <extended-regex> — best-effort: did the user run a matching

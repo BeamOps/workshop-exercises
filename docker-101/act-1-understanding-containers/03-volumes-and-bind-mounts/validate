@@ -14,8 +14,8 @@ check_msg "'db' is running" \
   "start Postgres again using the same volume" \
   container_running db
 
-check_msg "your data survived (the 'persisted' database is still there)" \
-  "create a database, remove the container, then restart it with the same volume" \
-  pg_has_db db persisted
+check_msg "your data survived (the 'notes' row is still there)" \
+  "create a table with a row, remove the container, then restart it with the same volume" \
+  pg_has_value db "SELECT msg FROM notes" "it survived"
 
 finish
