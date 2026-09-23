@@ -6,6 +6,9 @@ connect containers on a network so they reach each other by name.
 We use `nginx` (as the app), `postgres:18` (as the db), and `busybox` (a tiny
 image with a `ping` tool). No starter files.
 
+> **Start clean:** if you did an earlier exercise, run the repo's `bin/reset`
+> first to clear leftover containers and networks.
+
 ## Part 1 — Ports
 
 1. Run nginx in the background, named `app`, publishing container port 80 to host port 4000:

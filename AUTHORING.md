@@ -67,18 +67,41 @@ NN-name/
   validate     # executable self-check
 ```
 
-`validate` sources `bin/lib.sh`. Helpers: `require_docker`, `check_msg "desc"
-"hint" <cmd>`, `container_did <name> <action>` (reads `docker events`),
-`image_exists`, `http_ok`, `finish`.
+`validate` sources `bin/lib.sh`. Helpers include: `require_docker`, `check_msg
+"desc" "hint" <cmd>`, `finish`, and outcome checks: `container_running`,
+`container_publishes <name> <host-port>`, `container_did <name> <action>` (reads
+`docker events`), `image_exists`, `http_ok`, `volume_exists`, `network_exists`,
+`network_has_container`, `can_reach <network> <name>` (ping by name),
+`pg_has_db`, `pg_has_value <container> <sql> <expected>`.
 
 Validator philosophy:
 - **Check real outcomes / events, not trust.** Prefer end-state checks and
   `container_did` (created/stopped/exec/destroy) over believing the learner.
+- **Check the exercise's OWN resources, not ambient state.** A loose check
+  false-passes on leftovers or unrelated processes. Don't `http_ok
+  localhost:4000` (a stray Phoenix dev server on the port passes it), check the
+  exercise's container publishes the port (`container_publishes app 4000`).
+  Don't check "a container named `db` is running" (a `db` left over from a
+  previous exercise passes it), check something *this* exercise produced (its
+  named volume, or a row it wrote via `pg_has_value`).
 - **Hints nudge, they don't give the command.** Say *what* is missing
   ("`db` was never stopped"), never *how* (`docker stop db`). (Setup is the
   exception, it's a prerequisites checklist, so its hints may give commands.)
+- **All steps run from the host** (`docker run …`, `docker exec db psql -c "…"`),
+  never inside an interactive shell, so `validate` (also on the host) can observe
+  their effects.
 - Exercises can end however the lifecycle dictates (e.g. removing the container),
   `container_did` reads the event log so checks work even after `docker rm`.
+
+State & cleanup:
+- Exercises reuse names across sections (`app`, `db`), so leftover state pollutes
+  the next one. `bin/reset` removes the Docker 101 containers/networks/volumes.
+  Add a "**Start clean:** run the repo's `bin/reset`" note near the top of any
+  exercise that could inherit state, and extend `bin/reset` when you introduce
+  new names.
+- Exercises leave the resource the validator checks **running** (cleanup is a
+  separate "after validating" step). Combined with specific checks (above), a
+  resource left running by a prior exercise then won't cause a false pass.
 
 ## Alignment rules
 

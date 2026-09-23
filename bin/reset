@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+# Remove containers, networks, and volumes created by the Docker 101 exercises,
+# so you can start a section from a clean slate. Safe to run any time.
+docker rm -f app app-2 db db2 workshop-shell >/dev/null 2>&1
+docker network rm app-net >/dev/null 2>&1
+docker volume rm db-data >/dev/null 2>&1
+echo "✓ cleaned up Docker 101 exercise containers, networks, and volumes"
