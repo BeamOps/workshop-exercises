@@ -64,8 +64,40 @@ container_uses_image() {
   docker inspect --format '{{.Config.Image}}' "$1" 2>/dev/null | grep -q "$2"
 }
 
+# container_did <name> <action-substring> [window]
+# True if the daemon logged that action for the container recently. Lets us
+# verify state-changing steps were actually performed (stop, start, exec),
+# not just that the end state happens to be right. Read-only commands like
+# `docker ps` / `docker logs` leave no events and can't be checked this way.
+#
+# Uses Docker's own relative time window (default 1h) rather than the host
+# clock, Docker Desktop's daemon runs in a VM whose clock can drift from the
+# host, which would make a host-timestamp window miss recent events.
+container_did() {
+  local name="$1" action="$2" window="${3:-1h}"
+  docker events --since "$window" --until "0s" \
+    --filter "container=$name" --format '{{.Action}}' 2>/dev/null |
+    grep -q "$action"
+}
+
 # http_ok <url> — succeeds if the URL responds 2xx/3xx (needs curl)
 http_ok() { curl -fsS -o /dev/null "$1"; }
+
+# ran_command <extended-regex> — best-effort: did the user run a matching
+# command, according to their shell history? Reads the common history files.
+# CAVEAT: shells don't always flush history to disk immediately (plain bash
+# writes on exit), so this can miss very recent commands. It's the only way to
+# observe read-only commands like `docker ps` / `docker logs`, which leave no
+# daemon events, but treat a failure as "couldn't confirm", not "definitely
+# didn't run it".
+ran_command() {
+  local pattern="$1" f
+  for f in "${HISTFILE:-}" "$HOME/.zsh_history" "$HOME/.bash_history"; do
+    [ -n "$f" ] && [ -f "$f" ] || continue
+    grep -qE "$pattern" "$f" 2>/dev/null && return 0
+  done
+  return 1
+}
 
 # --- finish ---------------------------------------------------------------
 # Print a summary and exit non-zero if any check failed.

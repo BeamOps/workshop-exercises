@@ -3,41 +3,41 @@
 **Goal:** get comfortable with the container lifecycle, the handful of commands
 you'll use every day: `run`, `ps`, `logs`, `exec`, `stop`, `start`, `rm`.
 
-No starter files for this one, you work entirely with the `docker` CLI.
+We'll use a Postgres container, a real, long-running service is a better lifecycle
+example than a throwaway shell. No starter files, you work with the `docker` CLI.
 
 ## Steps
 
-1. **Run a throwaway container** and drop into an Elixir shell inside it:
+1. **Run Postgres in the background**, named so we can find it:
    ```
-   docker run -it elixir iex
-   ```
-   Type `1 + 1` to prove it works, then `System.halt()` (or Ctrl-C twice) to exit.
-
-2. **Run a long-lived container in the background**, named so we can find it:
-   ```
-   docker run -d --name workshop-shell elixir sleep infinity
+   docker run -d --name db -e POSTGRES_PASSWORD=postgres postgres:16
    ```
 
-3. **See it running:**
+2. **See it running:**
    ```
    docker ps
    ```
 
-4. **Exec into the running container** (a new shell in the same container):
+3. **Check its logs** (you should see Postgres finish starting up):
    ```
-   docker exec -it workshop-shell iex
-   ```
-   Exit the shell, the container keeps running.
-
-5. **Check its logs, stop it, start it again:**
-   ```
-   docker logs workshop-shell
-   docker stop workshop-shell
-   docker start workshop-shell
+   docker logs db
    ```
 
-Leave `workshop-shell` **running** at the end, that's what the self-check looks
-for.
+4. **Open a shell inside the running container**, then exit it (the container
+   keeps running):
+   ```
+   docker exec -it db bash
+   # ...poke around, then: exit
+   ```
+
+5. **Stop it, confirm it still exists, start it again:**
+   ```
+   docker stop db
+   docker ps -a        # stopped containers still show here
+   docker start db
+   ```
+
+Leave `db` **running** at the end, that's what the self-check looks for.
 
 ## Check your work
 
@@ -48,5 +48,5 @@ for.
 ## Clean up (after validating)
 
 ```
-docker rm -f workshop-shell
+docker rm -f db
 ```

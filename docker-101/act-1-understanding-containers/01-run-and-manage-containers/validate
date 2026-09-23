@@ -6,16 +6,24 @@ source "$ROOT/bin/lib.sh"
 info "Checking your container lifecycle work..."
 require_docker
 
-check_msg "a container named 'workshop-shell' exists" \
-  "create it: docker run -d --name workshop-shell elixir sleep infinity" \
-  container_exists workshop-shell
+check_msg "a container named 'db' exists" \
+  "create it: docker run -d --name db -e POSTGRES_PASSWORD=postgres postgres:16" \
+  container_exists db
 
-check_msg "'workshop-shell' is running" \
-  "start it: docker start workshop-shell" \
-  container_running workshop-shell
+check_msg "'db' is running" \
+  "start it: docker start db" \
+  container_running db
 
-check_msg "'workshop-shell' is based on the elixir image" \
-  "it should be run from the 'elixir' image" \
-  container_uses_image workshop-shell elixir
+check_msg "'db' is based on the postgres image" \
+  "it should be run from the 'postgres:16' image" \
+  container_uses_image db postgres
+
+check_msg "you stopped 'db' during the exercise" \
+  "practice the lifecycle: docker stop db  (then docker start db)" \
+  container_did db stop
+
+check_msg "you opened a shell inside 'db'" \
+  "try: docker exec -it db bash" \
+  container_did db exec
 
 finish
