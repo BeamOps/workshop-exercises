@@ -76,8 +76,4 @@ Leave both `db` and `db2` running for the check.
 
 ## Clean up (after validating)
 
-```
-docker rm -f db db2
-docker volume rm db-data
-rm -rf pgdata
-```
+Run the repo's `bin/reset`, it removes this exercise's containers, the `db-data` volume, and the `pgdata` folder (the next section's "Start clean" runs it too).

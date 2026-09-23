@@ -55,7 +55,4 @@ Leave `app`, `app-2`, and `db` running for the check.
 
 ## Clean up (after validating)
 
-```
-docker rm -f app app-2 db
-docker network rm app-net
-```
+Run the repo's `bin/reset`, it removes this exercise's containers and the `app-net` network (the next section's "Start clean" runs it too).
