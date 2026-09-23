@@ -74,10 +74,17 @@ container_uses_image() {
 # clock, Docker Desktop's daemon runs in a VM whose clock can drift from the
 # host, which would make a host-timestamp window miss recent events.
 container_did() {
-  local name="$1" action="$2" window="${3:-1h}"
-  docker events --since "$window" --until "0s" \
-    --filter "container=$name" --format '{{.Action}}' 2>/dev/null |
-    grep -q "$action"
+  local name="$1" action="$2" window="${3:-1h}" out
+  # Match by name in the raw event stream rather than --filter container=<name>:
+  # the name filter needs the container to still exist, but we want this to work
+  # after `docker rm` too (exercises that end by removing the container).
+  #
+  # Capture first, then grep a here-string: piping into `grep -q` makes grep exit
+  # on first match, which SIGPIPEs `docker events` and (under `pipefail`) would
+  # report the whole pipeline as failed even on a match.
+  out="$(docker events --since "$window" --until "0s" --filter "type=container" \
+    --format '{{.Actor.Attributes.name}} {{.Action}}' 2>/dev/null)"
+  grep -qE "^${name} .*${action}" <<<"$out"
 }
 
 # http_ok <url> — succeeds if the URL responds 2xx/3xx (needs curl)

@@ -1,43 +1,31 @@
 # Run & manage containers
 
-**Goal:** get comfortable with the container lifecycle, the handful of commands
+**Goal:** work through the full container lifecycle, the handful of commands
 you'll use every day: `run`, `ps`, `logs`, `exec`, `stop`, `start`, `rm`.
 
-We'll use a Postgres container, a real, long-running service is a better lifecycle
-example than a throwaway shell. No starter files, you work with the `docker` CLI.
+We use a Postgres container. No starter files, you work with the `docker` CLI.
 
 ## Steps
 
-1. **Run Postgres in the background**, named so we can find it:
+1. Run a Postgres container called `db` in the background with `POSTGRES_PASSWORD=password`:
    ```
-   docker run -d --name db -e POSTGRES_PASSWORD=postgres postgres:16
+   docker run -d --name db -e POSTGRES_PASSWORD=password postgres:16
    ```
-
-2. **See it running:**
-   ```
-   docker ps
-   ```
-
-3. **Check its logs** (you should see Postgres finish starting up):
-   ```
-   docker logs db
-   ```
-
-4. **Open a shell inside the running container**, then exit it (the container
-   keeps running):
+2. Confirm it's running with `docker ps`
+3. View its logs with `docker logs db`
+4. Open a bash shell inside it, then try `psql -U postgres` and `\l` to list databases:
    ```
    docker exec -it db bash
-   # ...poke around, then: exit
+   # inside the container: psql -U postgres   then  \l   then  \q
    ```
-
-5. **Stop it, confirm it still exists, start it again:**
+5. Exit the shell
+6. Stop the container, then confirm it's stopped but still exists with `docker ps -a`:
    ```
    docker stop db
-   docker ps -a        # stopped containers still show here
-   docker start db
+   docker ps -a
    ```
-
-Leave `db` **running** at the end, that's what the self-check looks for.
+7. Start it again with `docker start db`
+8. Remove it with `docker rm -f db`
 
 ## Check your work
 
@@ -45,8 +33,13 @@ Leave `db` **running** at the end, that's what the self-check looks for.
 ./validate
 ```
 
-## Clean up (after validating)
+The check reads Docker's event log to confirm you actually ran through the
+lifecycle, created the container, stopped it, opened a shell, and removed it, so
+it's fine (expected, in fact) that nothing is left running at the end.
 
-```
-docker rm -f db
-```
+## Debrief
+
+- What's the difference between an image and a container?
+- What happens to data inside a container when you stop it?
+- What happens when you remove it?
+- If you run `postgres:16` twice, do you get two separate databases?
