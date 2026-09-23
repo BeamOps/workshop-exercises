@@ -5,6 +5,10 @@
 /**/erl_crash.dump
 *.beam
 
+# Attendee-generated starter app (Act 2/3). Generated in 00-setup, reused across
+# acts, never committed — only starter-app/README.md is tracked.
+/docker-101/starter-app/starter_app/
+
 # Node / assets
 /**/node_modules/
 /**/priv/static/assets/
