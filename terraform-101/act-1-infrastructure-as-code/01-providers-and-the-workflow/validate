@@ -1,11 +1,55 @@
 #!/usr/bin/env bash
 # Validates: terraform-101 / act-1 / 01-providers-and-the-workflow
+#
+# Credential-free: only declares providers and a terraform_data resource, so the
+# whole init -> fmt -> validate -> plan cycle runs with no cloud account or token.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-todo \
-  "start/ declares two providers in a required_providers block" \
-  "terraform init resolved both providers (.terraform.lock.hcl present)" \
-  "config is formatted (terraform fmt -check) and valid (terraform validate)" \
-  "a terraform_data resource is present" \
-  "terraform plan succeeds and shows a create (no credentials needed)"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/start"
+
+info "Checking your providers & workflow exercise..."
+
+check_msg "terraform is installed" \
+  "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
+  command -v terraform
+
+# Two providers declared: count unique namespace/name source strings in the .tf files.
+providers_declared() {
+  local n
+  n="$(grep -hoE 'source[[:space:]]*=[[:space:]]*"[^"]+/[^"]+"' "$DIR"/*.tf 2>/dev/null |
+    sort -u | wc -l | tr -d ' ')"
+  [ "${n:-0}" -ge 2 ]
+}
+check_msg "you declared two providers in required_providers" \
+  "add two providers from the Registry (e.g. integrations/github and hashicorp/aws)" \
+  providers_declared
+
+check_msg "you added a terraform_data resource" \
+  "add a resource \"terraform_data\" \"...\" block so plan shows a create" \
+  grep -qE 'resource[[:space:]]+"terraform_data"' "$DIR"/*.tf
+
+# init ran and resolved both providers (each is a `provider "..."` block in the lock).
+lock_has_two_providers() {
+  [ -f "$DIR/.terraform.lock.hcl" ] || return 1
+  local n
+  n="$(grep -cE '^provider ' "$DIR/.terraform.lock.hcl")"
+  [ "${n:-0}" -ge 2 ]
+}
+check_msg "terraform init resolved both providers (.terraform.lock.hcl)" \
+  "in the start/ folder run: terraform init" \
+  lock_has_two_providers
+
+check_msg "your config is formatted (terraform fmt)" \
+  "run: terraform fmt" \
+  terraform -chdir="$DIR" fmt -check
+
+check_msg "terraform validate passes" \
+  "run: terraform init, then terraform validate" \
+  terraform -chdir="$DIR" validate
+
+check_msg "terraform plan succeeds (no credentials needed)" \
+  "run: terraform plan and fix any errors it reports" \
+  terraform -chdir="$DIR" plan -input=false -no-color
+
+finish
