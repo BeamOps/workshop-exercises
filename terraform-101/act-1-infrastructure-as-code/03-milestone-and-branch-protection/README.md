@@ -8,7 +8,7 @@ add two resources you haven't seen, then take the whole config through a real
 
 ## What you'll do
 
-1. Start from your `01-first-resource` config (or copy `solution/`).
+1. Start from your `02-first-resource` config (or copy `solution/`).
 2. Add a **milestone** with `github_repository_milestone`.
 3. Link your issues to it — work out how to get the milestone's number onto
    `github_issue.milestone_number`.

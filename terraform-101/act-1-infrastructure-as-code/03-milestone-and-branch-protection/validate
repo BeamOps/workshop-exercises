@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Validates: terraform-101 / act-1 / 02-milestone-and-branch-protection
+# Validates: terraform-101 / act-1 / 03-milestone-and-branch-protection
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 

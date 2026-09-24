@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / act-1 / 01-providers-and-the-workflow
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+todo \
+  "start/ declares two providers in a required_providers block" \
+  "terraform init resolved both providers (.terraform.lock.hcl present)" \
+  "config is formatted (terraform fmt -check) and valid (terraform validate)" \
+  "a terraform_data resource is present" \
+  "terraform plan succeeds and shows a create (no credentials needed)"
