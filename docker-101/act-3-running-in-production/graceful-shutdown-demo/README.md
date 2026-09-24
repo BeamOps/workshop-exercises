@@ -27,7 +27,7 @@ tells you exactly what to add by hand.
 ## 2. Rebuild the image and start the stack
 
 ```sh
-docker build -f ../01-multi-stage-build/start/Dockerfile -t starter-app:2.0 ../../starter-app/starter_app
+docker build -f ../01-multi-stage-build/start/Dockerfile -t starter-app:3.0 ../../starter-app/starter_app
 docker compose up -d          # from this demo folder; migrate runs the Oban migration too
 docker compose logs -f app    # in another terminal, to watch the job
 ```
@@ -45,7 +45,7 @@ docker compose kill -s SIGTERM app
 
 Oban waits its 5s grace, the 20s job is still running, so Oban kills it and the app
 exits. In the logs you'll see the `⏳ working…` ticks **stop around `5/20s` with no
-`✅ COMPLETED` line** — and the job goes back to **`retryable`**:
+`✅ COMPLETED` line**:
 
 ```sh
 docker compose exec db psql -U postgres -d starter_app \
@@ -78,6 +78,3 @@ state is **`completed`**, and the app then exits cleanly.
 ```sh
 docker compose down -v
 ```
-
-> Untested end-to-end in this repo (the starter app is attendee-generated) — do a dry run
-> before presenting.
