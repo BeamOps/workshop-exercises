@@ -3,4 +3,22 @@
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-todo "image tagged with a registry reference; image runs when pulled fresh"
+info "Checking your registry push/pull..."
+require_docker
+
+# A local registry is up and published (on host port 5001; macOS uses 5000 for AirPlay).
+check_msg "a local registry is running on port 5001" \
+  "docker run -d -p 5001:5000 --name registry registry:2" \
+  container_publishes registry 5001
+
+# The image actually made it into the registry (ask the registry's own API).
+check_msg "starter-app:2.0 was pushed to the registry" \
+  "docker tag starter-app:2.0 localhost:5001/starter-app:2.0 && docker push localhost:5001/starter-app:2.0" \
+  bash -c "curl -fsS localhost:5001/v2/starter-app/tags/list 2>/dev/null | grep -q '\"2.0\"'"
+
+# And it's present locally (so the pull worked).
+check_msg "the registry image is available locally (pulled back)" \
+  "docker pull localhost:5001/starter-app:2.0" \
+  image_exists localhost:5001/starter-app:2.0
+
+finish
