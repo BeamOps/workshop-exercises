@@ -1,0 +1,40 @@
+# Compose stack for the graceful-shutdown demo — the 03-docker-compose solution,
+# plus OBAN_GRACE on the app so you can tune Oban's shutdown_grace_period at run time.
+services:
+  db:
+    image: postgres:17
+    environment:
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: starter_app
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - db-data:/var/lib/postgresql/data
+
+  migrate:
+    image: starter-app:3.0
+    command: ["bin/migrate"]
+    environment:
+      DATABASE_URL: ecto://postgres:postgres@db/starter_app
+      SECRET_KEY_BASE: "kS3nq7wP2xR8vT1yU4zA6bC9dE0fG5hJ8kL1mN4pQ7rS0tV3wX6yZ9aB2cD5eF8gH1jK"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  app:
+    image: starter-app:3.0
+    ports:
+      - "4000:4000"
+    environment:
+      DATABASE_URL: ecto://postgres:postgres@db/starter_app
+      SECRET_KEY_BASE: "kS3nq7wP2xR8vT1yU4zA6bC9dE0fG5hJ8kL1mN4pQ7rS0tV3wX6yZ9aB2cD5eF8gH1jK"
+      OBAN_GRACE: ${OBAN_GRACE:-15000}
+    depends_on:
+      migrate:
+        condition: service_completed_successfully
+
+volumes:
+  db-data:
