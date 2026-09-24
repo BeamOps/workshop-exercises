@@ -28,8 +28,9 @@ without copying anything into it.
      pointing it at the app, `COPY mix.exs mix.lock ./` and `COPY . .` copy *the app's*
      files, while the Dockerfile itself stays here in the exercise. No copying needed.
 
-   (`start/Dockerfile.dockerignore` keeps `_build/`, `deps/` and friends out of that
-   context, so the build stays fast.)
+   (The `.dockerignore` you added to the app in setup keeps `_build/`, `deps/` and
+   friends out of that context — so the build stays fast and never drags in a
+   host-built release.)
 
 ## Check your work
 

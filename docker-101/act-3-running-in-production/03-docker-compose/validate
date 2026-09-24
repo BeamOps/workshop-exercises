@@ -2,5 +2,60 @@
 # Validates: act-3-running-in-production/03-docker-compose
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+COMPOSE="docker compose -f $HERE/start/compose.yaml"
 
-todo "compose file defines app + postgres services; docker compose up succeeds; the app is reachable and migrations ran"
+# Resolve the db container once (project-agnostic: works however they ran compose up).
+DB_CID="$($COMPOSE ps -q db 2>/dev/null | head -n1)"
+
+# --- checks, one per thing this exercise teaches --------------------------
+services_defined() { $COMPOSE config --services 2>/dev/null | sort | tr '\n' ' ' | grep -q 'app db migrate'; }
+
+db_healthy() {
+  [ -n "$DB_CID" ] && docker inspect "$DB_CID" --format '{{.State.Health.Status}}' 2>/dev/null | grep -qw healthy
+}
+
+db_uses_volume() {  # the db-data named volume is mounted at Postgres's data dir → data persists
+  [ -n "$DB_CID" ] && docker inspect "$DB_CID" \
+    --format '{{range .Mounts}}{{.Type}}:{{.Destination}} {{end}}' 2>/dev/null \
+    | grep -q 'volume:/var/lib/postgresql/data'
+}
+
+migrate_completed() {  # migrate ran bin/migrate and exited 0 — what the app waits on
+  $COMPOSE ps -a migrate --format '{{.State}} {{.ExitCode}}' 2>/dev/null | grep -qx 'exited 0'
+}
+
+db_has_migrations_table() {
+  $COMPOSE exec -T db psql -U postgres -d starter_app -tAc \
+    "SELECT to_regclass('public.schema_migrations')" 2>/dev/null | grep -qw schema_migrations
+}
+
+# --------------------------------------------------------------------------
+info "Checking your Compose stack..."
+require_docker
+
+check_msg "compose.yaml defines the db, migrate and app services" \
+  "you need all three services" \
+  services_defined
+
+check_msg "the db service is healthy (pg_isready healthcheck passing)" \
+  "the db must report healthy before migrate runs" \
+  db_healthy
+
+check_msg "the db persists to the db-data volume at /var/lib/postgresql/data" \
+  "mount db-data:/var/lib/postgresql/data on the db service" \
+  db_uses_volume
+
+check_msg "the migrate service completed successfully (exited 0)" \
+  "migrate runs the release's bin/migrate and must exit 0 before the app starts" \
+  migrate_completed
+
+check_msg "the app responds on http://localhost:4000" \
+  "publish 4000 and point the app's DATABASE_URL at the db service" \
+  http_ok http://localhost:4000
+
+check_msg "the starter_app database has a schema_migrations table" \
+  "migrate should run against the db service (DATABASE_URL points at 'db')" \
+  db_has_migrations_table
+
+finish

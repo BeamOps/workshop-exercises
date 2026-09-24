@@ -46,6 +46,24 @@ Keep Ecto + Postgres (the Act 3 Compose exercise needs a database). Use the name
 `starter_app` exactly. Phoenix's default `/` route already returns 200, so the exercise
 validators can just check the app is serving.
 
+### 4. Add a `.dockerignore`
+
+The Docker exercises build *against this app* as the build context, so Docker reads
+`.dockerignore` from here. This is important: after the release exercise your `_build/`
+holds a release compiled for **your host OS** (e.g. macOS), and if `COPY` drags it into
+a Linux image you get "Exec format error". Create the file so those never get copied:
+
+```sh
+cd starter_app
+cat > .dockerignore <<'EOF'
+_build/
+deps/
+.git/
+node_modules/
+*.local.exs
+EOF
+```
+
 ## How the exercises use it
 
 Every Act 2/3 exercise works on this same `starter-app/starter_app` tree, adding
