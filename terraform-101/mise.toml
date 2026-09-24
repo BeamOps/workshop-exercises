@@ -1,0 +1,17 @@
+# Pinned toolchain for the Terraform 101 exercises.
+#
+# Install mise (https://mise.jdx.dev), then from this directory run:
+#
+#   mise install
+#
+# Pins the Terraform CLI so everyone runs the same version the validators expect,
+# and installs the GitHub CLI (gh) used by the Act 1 finale's checks.
+[tools]
+terraform = "1.9.0"
+# GitHub CLI via the github backend (downloads the release, verifies GitHub
+# attestations + SLSA). The default aqua backend fails attestation checks for
+# cli/cli. gh's 2.x CLI surface is stable, so we track latest rather than pinning.
+"github:cli/cli" = { version = "latest", exe = "gh" }
+# Act 3 (secrets) tools. Installed now so nobody loses time on the day.
+sops = "3.9.0"
+age = "1.1.1"

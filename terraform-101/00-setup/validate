@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / 00-setup
+# OS-agnostic: checks capabilities (tools on PATH, a working token), not how
+# anything was installed.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+# Local helper (moves to bin/lib.sh once more Terraform validators reuse it).
+# Does this token authenticate to the GitHub API?
+github_token_valid() {
+  [ -n "${1:-}" ] || return 1
+  curl -fsS -o /dev/null -H "Authorization: Bearer $1" https://api.github.com/user
+}
+
+info "Checking you're ready for Terraform 101..."
+
+check_msg "terraform is installed" \
+  "install the Terraform CLI: https://developer.hashicorp.com/terraform/install" \
+  command -v terraform
+
+check_msg "terraform runs" \
+  "run: terraform version" \
+  terraform version
+
+# The GitHub provider authenticates with a token. We accept TF_VAR_github_token
+# (Terraform maps it to the github_token variable) or the provider's own
+# GITHUB_TOKEN fallback.
+token="${TF_VAR_github_token:-${GITHUB_TOKEN:-}}"
+
+check_msg "a GitHub token is set (TF_VAR_github_token)" \
+  "export TF_VAR_github_token=ghp_...  (see README step 2)" \
+  test -n "$token"
+
+check_msg "the GitHub token authenticates to the API" \
+  "GitHub rejected the token — check its scopes and expiry" \
+  github_token_valid "$token"
+
+check_msg "the GitHub CLI (gh) is installed" \
+  "install gh: https://cli.github.com  (used by the last Act 1 exercise)" \
+  command -v gh
+
+# Act 3 secrets tools. Not used until Act 3, but we check now so setup is one-and-done.
+check_msg "sops is installed" \
+  "install sops, or run 'mise install' in terraform-101/  (used in Act 3)" \
+  command -v sops
+
+check_msg "age is installed" \
+  "install age, or run 'mise install' in terraform-101/  (used in Act 3)" \
+  command -v age-keygen
+
+finish

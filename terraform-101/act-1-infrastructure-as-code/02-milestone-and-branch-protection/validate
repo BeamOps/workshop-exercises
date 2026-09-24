@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / act-1 / 02-milestone-and-branch-protection
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+todo \
+  "config adds a github_repository_milestone" \
+  "issues reference the milestone via milestone_number" \
+  "github_branch_protection requires an approving review on main" \
+  "gh confirms the milestone exists after apply" \
+  "gh confirms branch protection exists on main"

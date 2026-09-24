@@ -1,0 +1,11 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / act-1 / 01-first-resource
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+todo \
+  "start/ declares the integrations/github provider and a github_token variable" \
+  "terraform init has run (.terraform.lock.hcl present)" \
+  "a github_repository resource is defined" \
+  "issues are created with for_each over a locals map" \
+  "terraform plan succeeds and shows the repo + issues to be created"
