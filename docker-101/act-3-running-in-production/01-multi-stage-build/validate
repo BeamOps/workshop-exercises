@@ -2,5 +2,34 @@
 # Validates: act-3-running-in-production/01-multi-stage-build
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
+HERE="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+DF="$HERE/start/Dockerfile"
 
-todo "Dockerfile has a builder and a runtime stage; final image has no mix/elixir toolchain; the app still runs"
+info "Checking your multi-stage build..."
+require_docker
+
+# A named builder stage, and a runner that copies only the release out of it.
+check_msg "the Dockerfile has a named 'builder' stage" \
+  "name the first stage: FROM ... AS builder" \
+  grep -qiE '^FROM .+ AS builder' "$DF"
+
+check_msg "the runner copies the release out of the builder" \
+  "COPY --from=builder /app/_build/prod/rel/starter_app ./" \
+  grep -qiE '^COPY --from=builder' "$DF"
+
+check_msg "the image starter-app:2.0 built" \
+  "docker build -f start/Dockerfile -t starter-app:2.0 ../../starter-app/starter_app" \
+  image_exists starter-app:2.0
+
+# Multi-stage worked → the final image is small. A single-stage build is ~1.5 GB, so
+# an image under 800 MB proves the toolchain was left behind in the builder.
+check_msg "the final image is small (toolchain left behind)" \
+  "if it's ~1.5 GB you shipped the builder; copy only the release into a slim runner" \
+  bash -c '[ "$(docker image inspect starter-app:2.0 --format "{{.Size}}" 2>/dev/null || echo 0)" -lt 800000000 ]'
+
+# The release actually runs from the slim image (no database needed for `version`).
+check_msg "the release runs from the slim image" \
+  "docker run --rm starter-app:2.0 /app/bin/starter_app version" \
+  docker run --rm starter-app:2.0 /app/bin/starter_app version
+
+finish
