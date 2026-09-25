@@ -6,6 +6,16 @@ source "$ROOT/bin/lib.sh"
 info "Checking your ports & networking work..."
 require_docker
 
+# Step 1 — confirm they ran nginx without a port mapping and then cleaned it up.
+# The container is gone by now, so we rely on Docker's event history (1h window).
+check_msg "'app-no-port' was started (nginx without -p)" \
+  "run: docker run -d --name app-no-port nginx" \
+  container_did app-no-port start
+
+check_msg "'app-no-port' was removed" \
+  "clean up: docker rm -f app-no-port" \
+  container_did app-no-port destroy
+
 # Part 1 — ports (check the exercise's own containers publish the ports, so an
 # unrelated process already on 4000 doesn't give a false pass)
 check_msg "the 'app' container is published on port 4000" \
