@@ -1,43 +1,36 @@
 #!/usr/bin/env bash
 # Validates: terraform-101 / act-1 / 03-milestone-and-branch-protection
-#
-# No token needed: config-shape checks plus `terraform validate` (init downloads the
-# provider; validate checks syntax/references without calling the API). The exercise's
-# real payoff is `terraform apply`/`destroy` against GitHub, which you verify on
-# github.com; here we confirm the config is complete and valid.
+# Checks the shared project (terraform-101/github-project). No token needed for the
+# check: config-shape plus terraform validate. The real payoff is apply/destroy.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/start"
+DIR="$ROOT/terraform-101/github-project"
 
-info "Checking your milestone & branch-protection exercise..."
+info "Checking your milestone work (in github-project/)..."
 
 check_msg "terraform is installed" \
   "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
   command -v terraform
 
+check_msg "the shared project exists (terraform-101/github-project/main.tf)" \
+  "create terraform-101/github-project/main.tf and work there" \
+  test -f "$DIR/main.tf"
+
 check_msg "you added a github_repository_milestone" \
   "add resource \"github_repository_milestone\" \"...\" (see the provider docs)" \
   grep -qE 'resource[[:space:]]+"github_repository_milestone"' "$DIR"/*.tf
 
-check_msg "your issues reference the milestone (milestone_number)" \
-  "set milestone_number on github_issue from the milestone's number attribute" \
-  grep -q 'milestone_number' "$DIR"/*.tf
-
-branch_protection_with_reviews() {
-  grep -qE 'resource[[:space:]]+"github_branch_protection"' "$DIR"/*.tf &&
-    grep -q 'required_pull_request_reviews' "$DIR"/*.tf
-}
-check_msg "you added github_branch_protection with a required_pull_request_reviews block" \
-  "add github_branch_protection on \"main\" with a nested required_pull_request_reviews block" \
-  branch_protection_with_reviews
+check_msg "the milestone references the repository (an implicit dependency)" \
+  "set repository = github_repository.workshop_app.name on the milestone" \
+  grep -q 'github_repository\.workshop_app' "$DIR"/*.tf
 
 lock_has_github() {
   [ -f "$DIR/.terraform.lock.hcl" ] || return 1
   grep -q 'integrations/github' "$DIR/.terraform.lock.hcl"
 }
 check_msg "terraform init resolved the provider (.terraform.lock.hcl)" \
-  "in the start/ folder run: terraform init" \
+  "in github-project/ run: terraform init" \
   lock_has_github
 
 check_msg "your config is formatted (terraform fmt)" \

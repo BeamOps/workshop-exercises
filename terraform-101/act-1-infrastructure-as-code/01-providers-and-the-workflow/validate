@@ -1,41 +1,33 @@
 #!/usr/bin/env bash
 # Validates: terraform-101 / act-1 / 01-providers-and-the-workflow
-#
-# Credential-free: the random provider + a random_pet resource, so the whole
-# init -> plan -> apply -> destroy cycle runs with no cloud account or token.
-# We check the config is complete and that `plan` succeeds, which works whether or
-# not you've already run apply/destroy (the exercise ends by destroying).
+# Checks the shared project (terraform-101/github-project). No token needed:
+# init downloads the provider and validate checks syntax without calling the API.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/start"
+DIR="$ROOT/terraform-101/github-project"
 
-info "Checking your providers & versions exercise..."
+info "Checking your providers & versions work (in github-project/)..."
 
 check_msg "terraform is installed" \
   "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
   command -v terraform
 
-check_msg "you declared the random provider (hashicorp/random)" \
-  "add hashicorp/random to required_providers (see the README)" \
-  grep -qE 'source[[:space:]]*=[[:space:]]*"hashicorp/random"' "$DIR"/*.tf
+check_msg "the shared project exists (terraform-101/github-project/main.tf)" \
+  "create terraform-101/github-project/main.tf and work there" \
+  test -f "$DIR/main.tf"
 
-check_msg "you added a random_pet resource" \
-  "add a resource \"random_pet\" \"...\" block" \
-  grep -qE 'resource[[:space:]]+"random_pet"' "$DIR"/*.tf
+check_msg "you declared the GitHub provider (integrations/github)" \
+  "add integrations/github to required_providers" \
+  grep -qE 'source[[:space:]]*=[[:space:]]*"integrations/github"' "$DIR"/*.tf
 
-check_msg "you added an output" \
-  "add an output block that exposes the pet name" \
-  grep -qE '^output[[:space:]]+"' "$DIR"/*.tf
-
-# init ran and resolved the random provider (recorded in the lock file).
-lock_has_random() {
+lock_has_github() {
   [ -f "$DIR/.terraform.lock.hcl" ] || return 1
-  grep -q 'hashicorp/random' "$DIR/.terraform.lock.hcl"
+  grep -q 'integrations/github' "$DIR/.terraform.lock.hcl"
 }
-check_msg "terraform init resolved the random provider (.terraform.lock.hcl)" \
-  "in the start/ folder run: terraform init" \
-  lock_has_random
+check_msg "terraform init resolved the provider (.terraform.lock.hcl)" \
+  "in github-project/ run: terraform init" \
+  lock_has_github
 
 check_msg "your config is formatted (terraform fmt)" \
   "run: terraform fmt" \
@@ -44,9 +36,5 @@ check_msg "your config is formatted (terraform fmt)" \
 check_msg "terraform validate passes" \
   "run: terraform init, then terraform validate" \
   terraform -chdir="$DIR" validate
-
-check_msg "terraform plan succeeds" \
-  "run: terraform plan and fix any errors it reports" \
-  terraform -chdir="$DIR" plan -input=false -no-color
 
 finish

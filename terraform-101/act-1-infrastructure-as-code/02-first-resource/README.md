@@ -1,28 +1,17 @@
-# First resource: the GitHub provider
+# Create the repository
 
-**Goal:** configure the GitHub provider, create a repository, and add issues with
-`for_each`, then `plan` it. We **stop at plan** here (nothing is created); the next
-exercise applies it for real.
+**Goal:** add a real GitHub repository to your project. Token hardcoded for now; Act 2 switches
+to variables.
 
-Export the token you made in setup first:
-
-```
-export TF_VAR_github_token="ghp_your_token_here"
-```
+Keep working in the same **`terraform-101/github-project/main.tf`**, on top of what you did in
+the last exercise.
 
 ## What you'll do
 
-In `start/`:
-
-1. Write `main.tf`: the `terraform` block requiring `integrations/github` (`~> 6.0`), a
-   `provider "github"` using a `github_token` variable, and the `variable "github_token"`
-   (`sensitive = true`).
-2. `terraform init` to download the provider and write `.terraform.lock.hcl`.
-3. Add a `github_repository` resource for your app (private, `has_issues = true`).
-4. Add a few issues with `for_each` over a `locals` map (the workshop roadmap: pin
-   providers, remote state, SOPS secrets).
-5. `terraform fmt`, `terraform validate`, then `terraform plan` and read the diff. **Stop
-   at plan.** The next exercise applies it.
+1. Add a token to the `provider "github"` block (hardcoded, for now, never commit a real one).
+2. Add a `github_repository` resource for your app (private, `has_issues = true`).
+3. `terraform plan` to read the diff, then `terraform apply`: the repository appears on GitHub.
+   (Your provider is already initialised from the last exercise.)
 
 ## Check your work
 
@@ -32,6 +21,6 @@ In `start/`:
 
 ## Debrief
 
-- Why commit `.terraform.lock.hcl`?
-- What does `plan` show, and why always run it before `apply`?
-- How does `for_each` differ from three copy-pasted resource blocks?
+- What did `plan` show before you applied?
+- Where does Terraform record that the repo now exists?
+- Why is hardcoding a token a bad habit? (Act 2 fixes it.)
