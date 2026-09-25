@@ -1,16 +1,15 @@
-# Providers and the workflow — starter file.
+# Providers, versions, and the lock file — starter file.
 #
 # Follow the README:
-#   1. Add a required_providers block with two providers from the Registry.
-#   2. Add a terraform_data resource so `plan` shows a "+ create".
-#   3. Run fmt / validate / plan / console.
+#   1. Add the random provider (hashicorp/random) pinned to exactly 3.6.0.
+#   2. init, inspect with `terraform providers`, then init -upgrade (nothing changes).
+#   3. Loosen the version to ~> 3.6 and init -upgrade again.
+#   4. Add a random_pet resource and an output, then plan, apply, console, and destroy.
 
 terraform {
-    required_providers {
-        # TODO: add a SaaS provider (e.g. GitHub) and a cloud provider (e.g. AWS)
-    }
+  required_providers {
+    # TODO: add hashicorp/random, version = "3.6.0"
+  }
 }
 
-
-# TODO: add a `terraform_data` resource so `terraform plan` shows a create.
-# It's built into Terraform, so it needs no provider and no credentials.
+# TODO: add a random_pet resource (no credentials needed) and an output for its name.
