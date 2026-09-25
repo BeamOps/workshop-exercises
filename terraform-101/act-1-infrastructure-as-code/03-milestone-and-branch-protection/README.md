@@ -1,22 +1,22 @@
-# Milestone & branch protection (and a real apply)
+# Milestone & branch protection (a real apply)
 
 **Goal:** using the [GitHub provider docs](https://registry.terraform.io/providers/integrations/github/latest/docs),
-add two resources you haven't seen, then take the whole config through a real
-`apply` and `destroy`.
+add two resources you haven't seen, then take the whole config through a real `apply`
+and `destroy`.
 
-> _Draft scaffold — the full step-by-step lands in the next iteration._
+Start from your `02-first-resource` config (it's copied into `start/` for you), with your
+token exported.
 
 ## What you'll do
 
-1. Start from your `02-first-resource` config (or copy `solution/`).
-2. Add a **milestone** with `github_repository_milestone`.
-3. Link your issues to it — work out how to get the milestone's number onto
-   `github_issue.milestone_number`.
-4. Add **branch protection** on `main` with `github_branch_protection`, requiring
-   at least one approving review before merge.
-5. `terraform apply` — create it all on GitHub for real.
-6. `terraform destroy` — watch Terraform remove everything in reverse dependency
-   order.
+1. Add a **milestone** with `github_repository_milestone` on the repo.
+2. Link your issues to it: set `milestone_number` on `github_issue`, working out how to read
+   the number off the milestone resource.
+3. Add **branch protection** on `main` with `github_branch_protection`, requiring one
+   approving review (the nested `required_pull_request_reviews` block).
+4. `terraform apply` to create it all on GitHub for real. Check the repo: the milestone, the
+   issues on it, and a protected `main`.
+5. `terraform destroy` to remove everything in reverse dependency order.
 
 ## Check your work
 
@@ -24,11 +24,11 @@ add two resources you haven't seen, then take the whole config through a real
 ./validate
 ```
 
-The check uses the GitHub CLI (`gh`) to confirm the milestone and branch
-protection exist after your `apply`.
+The check confirms your config declares the milestone, links the issues, and sets up branch
+protection, and that it is valid. The real proof is seeing it on GitHub after `apply`.
 
 ## Debrief
 
 - In what order did Terraform create the resources? Destroy them?
 - How did you find the `milestone_number` wiring from the docs alone?
-- What's the risk, and the benefit, of managing branch protection in code?
+- What is the benefit, and the risk, of managing branch protection in code?

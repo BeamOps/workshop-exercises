@@ -1,11 +1,53 @@
 #!/usr/bin/env bash
 # Validates: terraform-101 / act-1 / 02-first-resource
+#
+# No token needed: `terraform init` downloads the provider and `terraform validate`
+# checks syntax and references without calling the GitHub API. The exercise stops at
+# `plan`, which does need your token; we don't run it here.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
 source "$ROOT/bin/lib.sh"
 
-todo \
-  "start/ declares the integrations/github provider and a github_token variable" \
-  "terraform init has run (.terraform.lock.hcl present)" \
-  "a github_repository resource is defined" \
-  "issues are created with for_each over a locals map" \
-  "terraform plan succeeds and shows the repo + issues to be created"
+DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)/start"
+
+info "Checking your first-resource exercise..."
+
+check_msg "terraform is installed" \
+  "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
+  command -v terraform
+
+check_msg "you declared the GitHub provider (integrations/github)" \
+  "add integrations/github to required_providers" \
+  grep -qE 'source[[:space:]]*=[[:space:]]*"integrations/github"' "$DIR"/*.tf
+
+check_msg "you declared a github_token variable" \
+  "add variable \"github_token\" { type = string, sensitive = true }" \
+  grep -qE 'variable[[:space:]]+"github_token"' "$DIR"/*.tf
+
+check_msg "you added a github_repository resource" \
+  "add resource \"github_repository\" \"...\"" \
+  grep -qE 'resource[[:space:]]+"github_repository"' "$DIR"/*.tf
+
+issues_with_for_each() {
+  grep -qE 'resource[[:space:]]+"github_issue"' "$DIR"/*.tf && grep -q 'for_each' "$DIR"/*.tf
+}
+check_msg "you added issues with for_each" \
+  "add resource \"github_issue\" with for_each over a locals map" \
+  issues_with_for_each
+
+lock_has_github() {
+  [ -f "$DIR/.terraform.lock.hcl" ] || return 1
+  grep -q 'integrations/github' "$DIR/.terraform.lock.hcl"
+}
+check_msg "terraform init resolved the provider (.terraform.lock.hcl)" \
+  "in the start/ folder run: terraform init" \
+  lock_has_github
+
+check_msg "your config is formatted (terraform fmt)" \
+  "run: terraform fmt" \
+  terraform -chdir="$DIR" fmt -check
+
+check_msg "terraform validate passes" \
+  "run: terraform init, then terraform validate" \
+  terraform -chdir="$DIR" validate
+
+finish
