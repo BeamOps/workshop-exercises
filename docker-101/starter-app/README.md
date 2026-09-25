@@ -1,16 +1,14 @@
 # Starter app
 
 A deliberately small Phoenix application used by the Act 2 and Act 3 exercises
-(releases, Dockerfiles, multi-stage builds, Compose). One shared app means you
-learn Docker, not a new codebase, at each step.
+(releases, Dockerfiles, multi-stage builds, Compose).
 
-## You generate it — we don't ship it
+## You generate it, we don't ship it
 
 The app is **not committed**. You generate it yourself (once) and it stays
 gitignored right here (`starter-app/starter_app/`). Everyone runs the same pinned
 commands, so the app name (`starter_app`) and its paths are identical for all
-attendees — which is what lets the exercise validators rely on them. Do this during
-`00-setup`, on good wifi, so dependencies download before the workshop.
+attendees. Follow these steps, on good wifi, so dependencies download before the workshop.
 
 ### 1. Activate the pinned toolchain
 
@@ -67,7 +65,7 @@ EOF
 ## How the exercises use it
 
 Every Act 2/3 exercise works on this same `starter-app/starter_app` tree, adding
-one artifact at a time — a release, then a Dockerfile, then a `compose.yaml`. If you
+one artifact at a time: a release, then a Dockerfile, then a `compose.yaml`. If you
 fall behind, each exercise's `solution/` holds the finished artifact to copy in and
 keep going. The `start/` folders hold scaffolding (a partial Dockerfile, and so on),
 never the app itself.
