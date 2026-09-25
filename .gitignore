@@ -35,6 +35,10 @@ crash.*.log
 *.tfvars.json
 !*.tfvars.example
 
+# The shared, evolving Terraform project (attendee's local main.tf + state, not committed)
+terraform-101/github-project/*
+!terraform-101/github-project/README.md
+
 # OS / editor cruft
 .DS_Store
 *.swp
