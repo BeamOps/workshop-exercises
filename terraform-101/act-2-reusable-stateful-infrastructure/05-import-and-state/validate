@@ -22,8 +22,8 @@ check_msg "you added a github_issue_label resource" \
   grep -qE 'resource[[:space:]]+"github_issue_label"' "$DIR"/*.tf
 
 check_msg "the label references the repository" \
-  "set repository = github_repository.workshop_app.name on the label" \
-  grep -q 'github_repository\.workshop_app' "$DIR"/*.tf
+  "set repository = github_repository.<your_label>.name on the label resource" \
+  grep -qE 'github_repository\.[a-zA-Z_][a-zA-Z0-9_]*\.' "$DIR"/*.tf
 
 no_import_block() {
   ! grep -qE '^[[:space:]]*import[[:space:]]*\{' "$DIR"/*.tf

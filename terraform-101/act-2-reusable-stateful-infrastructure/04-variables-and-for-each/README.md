@@ -8,7 +8,7 @@ already have.
 
 ## What you'll do
 
-1. Reapply your configuration to create your repository and milestone again if you deleted it at the end of the last section in your project.
+1. Reapply your configuration to create your repository and milestone again if you deleted it at the end of the last section.
 2. **Move the token into a variable.** Add a `variable "github_token"` (`type = string`,
    `sensitive = true`, a description), point the provider at `var.github_token`, and delete the
    hardcoded value. Supply it from the environment:
