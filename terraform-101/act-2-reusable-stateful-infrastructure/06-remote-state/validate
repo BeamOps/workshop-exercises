@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / act-2 / 06-remote-state
+# Checks the shared project (terraform-101/github-project). Config-shape plus
+# terraform validate. The real payoff is the state file landing in S3 after init.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+DIR="$ROOT/terraform-101/github-project"
+
+info "Checking your remote state work (in github-project/)..."
+
+check_msg "terraform is installed" \
+  "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
+  command -v terraform
+
+check_msg "the shared project exists (terraform-101/github-project/main.tf)" \
+  "create terraform-101/github-project/main.tf and work there" \
+  test -f "$DIR/main.tf"
+
+check_msg "you added a backend \"s3\" block" \
+  "add a backend \"s3\" block inside terraform { } (see the module 05 README)" \
+  grep -qE 'backend[[:space:]]+"s3"' "$DIR"/*.tf
+
+check_msg "the backend locks with use_lockfile = true" \
+  "add use_lockfile = true so concurrent applies fail instead of racing" \
+  grep -qE 'use_lockfile[[:space:]]*=[[:space:]]*true' "$DIR"/*.tf
+
+key_is_unique() {
+  grep -qE 'key[[:space:]]*=' "$DIR"/*.tf && ! grep -q 'your-name/terraform.tfstate' "$DIR"/*.tf
+}
+check_msg "your state key is set and unique to you (not the placeholder)" \
+  "set key = \"<your-name>/terraform.tfstate\" so you don't clobber a group-mate's state" \
+  key_is_unique
+
+lock_has_github() {
+  [ -f "$DIR/.terraform.lock.hcl" ] || return 1
+  grep -q 'integrations/github' "$DIR/.terraform.lock.hcl"
+}
+check_msg "terraform init resolved the provider (.terraform.lock.hcl)" \
+  "in github-project/ run: terraform init" \
+  lock_has_github
+
+check_msg "your config is formatted (terraform fmt)" \
+  "run: terraform fmt" \
+  terraform -chdir="$DIR" fmt -check
+
+check_msg "terraform validate passes" \
+  "run: terraform init (migrate to the backend), then terraform validate" \
+  terraform -chdir="$DIR" validate
+
+finish
