@@ -1,0 +1,51 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / act-2 / 05-import-and-state
+# Checks the shared project (terraform-101/github-project). No token needed for the
+# check: config-shape plus terraform validate. The real payoff is import/apply.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+DIR="$ROOT/terraform-101/github-project"
+
+info "Checking your import and state work (in github-project/)..."
+
+check_msg "terraform is installed" \
+  "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
+  command -v terraform
+
+check_msg "the shared project exists (terraform-101/github-project/main.tf)" \
+  "create terraform-101/github-project/main.tf and work there" \
+  test -f "$DIR/main.tf"
+
+check_msg "you added a github_issue_label resource" \
+  "add resource \"github_issue_label\" \"...\" for the label you created by hand" \
+  grep -qE 'resource[[:space:]]+"github_issue_label"' "$DIR"/*.tf
+
+check_msg "the label references the repository" \
+  "set repository = github_repository.workshop_app.name on the label" \
+  grep -q 'github_repository\.workshop_app' "$DIR"/*.tf
+
+no_import_block() {
+  ! grep -qE '^[[:space:]]*import[[:space:]]*\{' "$DIR"/*.tf
+}
+check_msg "the import block was removed after applying" \
+  "an import block is a one-time migration; delete it once the apply succeeds" \
+  no_import_block
+
+lock_has_github() {
+  [ -f "$DIR/.terraform.lock.hcl" ] || return 1
+  grep -q 'integrations/github' "$DIR/.terraform.lock.hcl"
+}
+check_msg "terraform init resolved the provider (.terraform.lock.hcl)" \
+  "in github-project/ run: terraform init" \
+  lock_has_github
+
+check_msg "your config is formatted (terraform fmt)" \
+  "run: terraform fmt" \
+  terraform -chdir="$DIR" fmt -check
+
+check_msg "terraform validate passes" \
+  "run: terraform init, then terraform validate" \
+  terraform -chdir="$DIR" validate
+
+finish
