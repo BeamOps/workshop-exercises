@@ -21,6 +21,14 @@ check_msg "you added a github_repository resource" \
   "add resource \"github_repository\" \"...\" to your project" \
   grep -qE 'resource[[:space:]]+"github_repository"' "$DIR"/*.tf
 
+check_msg "visibility is set to \"private\"" \
+  "add visibility = \"private\" inside the github_repository block" \
+  grep -qE 'visibility[[:space:]]*=[[:space:]]*"private"' "$DIR"/*.tf
+
+check_msg "has_issues is set to true" \
+  "add has_issues = true inside the github_repository block" \
+  grep -qE 'has_issues[[:space:]]*=[[:space:]]*true' "$DIR"/*.tf
+
 lock_has_github() {
   [ -f "$DIR/.terraform.lock.hcl" ] || return 1
   grep -q 'integrations/github' "$DIR/.terraform.lock.hcl"
