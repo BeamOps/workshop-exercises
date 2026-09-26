@@ -17,7 +17,7 @@ Confirm your machine is ready: work through [`00-setup`](00-setup/) and get a gr
 |---|----------|------|
 | 01 | [providers-and-the-workflow](act-1-infrastructure-as-code/01-providers-and-the-workflow/) | Explore the provider registry and the core workflow (init, fmt, validate, plan, console), no credentials needed. |
 | 02 | [first-resource](act-1-infrastructure-as-code/02-first-resource/) | Configure the GitHub provider and use `plan` to preview the repository and issues Terraform would create. |
-| 03 | [milestone-and-branch-protection](act-1-infrastructure-as-code/03-milestone-and-branch-protection/) | Add a milestone and branch protection from the provider docs, then `apply` and `destroy` for real. |
+| 03 | [milestone](act-1-infrastructure-as-code/03-milestone/) | Add a milestone that references the repo (an implicit dependency) from the provider docs, then `apply` and `destroy` for real. |
 
 ## Act 2 — Reusable, stateful infrastructure
 

@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Validates: terraform-101 / act-1 / 03-milestone-and-branch-protection
+# Validates: terraform-101 / act-1 / 03-milestone
 # Checks the shared project (terraform-101/github-project). No token needed for the
 # check: config-shape plus terraform validate. The real payoff is apply/destroy.
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
