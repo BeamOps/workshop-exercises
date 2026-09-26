@@ -1,0 +1,17 @@
+# This .gitignore travels with your config. In Act 3 you push this folder to
+# your group's GitHub repo, and this is what keeps state and secrets off GitHub.
+
+# Local Terraform working directory (provider downloads, backend config).
+.terraform/
+
+# State files. Yours live in S3 now, but never commit any that appear locally.
+*.tfstate
+*.tfstate.*
+
+# Credentials passed via tfvars or a dotenv, never commit these.
+*.tfvars
+*.tfvars.json
+.env
+
+# Do NOT ignore .terraform.lock.hcl: commit it so CI resolves the same
+# provider versions you do.

@@ -12,6 +12,3 @@ terraform = "1.9.0"
 # attestations + SLSA). The default aqua backend fails attestation checks for
 # cli/cli. gh's 2.x CLI surface is stable, so we track latest rather than pinning.
 "github:cli/cli" = { version = "latest", exe = "gh" }
-# Act 3 (secrets) tools. Installed now so nobody loses time on the day.
-sops = "3.9.0"
-age = "1.1.1"

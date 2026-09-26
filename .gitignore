@@ -38,6 +38,9 @@ crash.*.log
 # The shared, evolving Terraform project (attendee's local main.tf + state, not committed)
 terraform-101/github-project/*
 !terraform-101/github-project/README.md
+# ...but the things we ship for attendees to use are committed:
+!terraform-101/github-project/.gitignore
+!terraform-101/github-project/modules/
 
 # OS / editor cruft
 .DS_Store
