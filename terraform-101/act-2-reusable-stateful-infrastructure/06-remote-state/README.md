@@ -19,7 +19,6 @@ Same project, **`terraform-101/github-project/main.tf`**, on top of module 05's 
 3. `terraform init`: Terraform detects the new backend and offers to migrate your local state.
    Say **yes**.
 4. `terraform plan`: no changes, same config, new home. Your `terraform.tfstate` now lives in S3.
-5. Look in the bucket, you'll see your state file under your key.
 
 ## Check your work
 
