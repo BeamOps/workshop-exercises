@@ -9,7 +9,7 @@ the last exercise.
 ## What you'll do
 
 1. Add a token to the `provider "github"` block (hardcoded, for now, never commit a real one).
-2. Add a `github_repository` resource for your app (private, `has_issues = true`).
+2. Add a `github_repository` resource for your app and set the visbility to private and add the `has_issues = true` attribute.
 3. `terraform plan` to read the diff, then `terraform apply`: the repository appears on GitHub.
    (Your provider is already initialised from the last exercise.)
 

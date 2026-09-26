@@ -22,8 +22,8 @@ check_msg "you added a github_repository_milestone" \
   grep -qE 'resource[[:space:]]+"github_repository_milestone"' "$DIR"/*.tf
 
 check_msg "the milestone references the repository (an implicit dependency)" \
-  "set repository = github_repository.workshop_app.name on the milestone" \
-  grep -q 'github_repository\.workshop_app' "$DIR"/*.tf
+  "set repository = github_repository.<your_label>.name on the milestone resource" \
+  grep -qE 'github_repository\.[a-zA-Z_][a-zA-Z0-9_]*\.name' "$DIR"/*.tf
 
 lock_has_github() {
   [ -f "$DIR/.terraform.lock.hcl" ] || return 1
