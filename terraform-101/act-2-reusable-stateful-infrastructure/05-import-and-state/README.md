@@ -8,17 +8,15 @@ Same project, **`terraform-101/github-project/main.tf`**, on top of everything f
 
 ## What you'll do
 
-1. **ClickOps a label.** On GitHub, open your repo's Labels page and add a label by hand: name
+1. Reapply your configuration to create your repository and milestone again if you deleted it at the end of the last section.
+2. **ClickOps a label.** On GitHub, create a new label. To do this go to one of your milestones, try to assign a label and in the process create a new one. Name
    it `workshop`, pick any colour. Terraform knows nothing about it.
-2. **Adopt it.** Add a `github_issue_label` resource for that label, plus an `import` block that
-   points at it. The import ID for a label is `repository:name`, e.g.
-   `your-org/beamops-workshop-app:workshop` (see the
+3. **Import it into your configuration using an import block.** Remember to add the appropriate GitHub issue resource for that label in your configuration. The import ID for a label is `repository:name`, e.g.
+   `beamops-workshop-app:workshop` (see the
    [provider docs](https://registry.terraform.io/providers/integrations/github/latest/docs/resources/issue_label)).
-3. `terraform plan` to preview the import, then `terraform apply`. Delete the `import` block
+4. `terraform plan` to preview the import, and once you are happy that the resource will not be updated during the import, run `terraform apply`. Delete the `import` block
    once it succeeds, it's a one-time migration.
-4. **Read your state.** Run `terraform state list`, then `terraform state show
-   github_issue_label.workshop`. Open `terraform console` and read an attribute, for example
-   `github_issue_label.workshop.color`.
+5. **Read your state.** Run `terraform state list`, then `terraform state show` using your github label resource address. Open `terraform console` and read an attribute of your label resource such as its colour. See if you can use a Terraform function to capitalise the colour value.
 
 ## Check your work
 
