@@ -39,13 +39,4 @@ check_msg "the GitHub CLI (gh) is installed" \
   "install gh: https://cli.github.com  (used by the last Act 1 exercise)" \
   command -v gh
 
-# Act 3 secrets tools. Not used until Act 3, but we check now so setup is one-and-done.
-check_msg "sops is installed" \
-  "install sops, or run 'mise install' in terraform-101/  (used in Act 3)" \
-  command -v sops
-
-check_msg "age is installed" \
-  "install age, or run 'mise install' in terraform-101/  (used in Act 3)" \
-  command -v age-keygen
-
 finish

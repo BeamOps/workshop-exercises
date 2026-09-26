@@ -11,10 +11,10 @@ If you use [mise](https://mise.jdx.dev), this repo pins the tools for you. From 
 `terraform-101/` directory:
 
 ```
-mise install    # installs Terraform, gh, and the Act 3 secrets tools (sops, age)
+mise install    # installs Terraform and gh
 ```
 
-That covers steps 1, 3, and 4 below — you still need a GitHub token (step 2). Prefer
+That covers steps 1 and 3 below — you still need a GitHub token (step 2). Prefer
 to install things yourself? The per-OS instructions below work too.
 
 ## 1. Terraform
@@ -62,17 +62,6 @@ check uses the GitHub CLI.
 | macOS | `brew install gh` |
 | Windows | `choco install gh` |
 | Linux | [cli.github.com](https://cli.github.com) |
-
-## 4. Secrets tools: SOPS and age
-
-You won't use these until **Act 3** (encrypting secrets), but install them now so
-setup is one-and-done. `mise install` above already includes them.
-
-| OS | Install |
-|----|---------|
-| macOS | `brew install sops age` |
-| Windows | `choco install sops age` |
-| Linux | [SOPS releases](https://github.com/getsops/sops/releases) + [age releases](https://github.com/FiloSottile/age/releases) |
 
 ## Check your work
 

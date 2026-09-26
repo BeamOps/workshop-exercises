@@ -21,7 +21,7 @@ provider "github" {
 locals {
   issues = {
     "Move state to a shared backend" = "Terraform state should live in a remote backend, not on a laptop."
-    "Encrypt the token with SOPS"    = "Stop passing the token by hand; commit it encrypted with SOPS and age."
+    "Add a CD pipeline"              = "Plan on every PR, apply on merge, so nobody applies from a laptop."
     "Run terraform plan in CI"       = "Catch drift and review the plan on every pull request."
   }
 }

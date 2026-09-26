@@ -3,8 +3,7 @@
 Work through these in order. Each exercise directory has a `README.md`, a `start/`
 folder to work in, a `solution/` for reference, and a `./validate` self-check.
 
-The exercises follow the three acts of the workshop. **Act 1 is available now**;
-Acts 2 and 3 are on the way.
+The exercises follow the three acts of the workshop, all available below.
 
 ## Before you start
 
@@ -21,11 +20,18 @@ Confirm your machine is ready: work through [`00-setup`](00-setup/) and get a gr
 
 ## Act 2 — Reusable, stateful infrastructure
 
-_Coming soon._ Variables, locals, `for_each`, and remote state.
+| # | Exercise | Goal |
+|---|----------|------|
+| 04 | [variables-and-for-each](act-2-reusable-stateful-infrastructure/04-variables-and-for-each/) | Move the token into a variable and create your issues with `for_each`. |
+| 05 | [import-and-state](act-2-reusable-stateful-infrastructure/05-import-and-state/) | Import a hand-made label and inspect state with the state commands and console. |
+| 06 | [remote-state](act-2-reusable-stateful-infrastructure/06-remote-state/) | Move your state to a shared S3 backend with locking. |
 
-## Act 3 — Secrets and automated delivery
+## Act 3 — Continuous delivery
 
-_Coming soon._ SOPS-encrypted secrets and OIDC continuous deployment.
+| # | Exercise | Goal |
+|---|----------|------|
+| 07 | [continuous-delivery](act-3-continuous-delivery/07-continuous-delivery/) | Put your group's repo under CD: secrets via a module, plan on PR, apply on merge. |
+| 08 | [state-drift](act-3-continuous-delivery/08-state-drift/) | Cause drift and watch the pipeline refuse a stale plan, then recover as a group. |
 
 ## A note on real resources
 
