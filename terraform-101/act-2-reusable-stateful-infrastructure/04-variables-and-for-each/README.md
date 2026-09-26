@@ -8,7 +8,8 @@ already have.
 
 ## What you'll do
 
-1. **Move the token into a variable.** Add a `variable "github_token"` (`type = string`,
+1. Reapply your configuration to create your repository and milestone again if you deleted it at the end of the last section in your project.
+2. **Move the token into a variable.** Add a `variable "github_token"` (`type = string`,
    `sensitive = true`, a description), point the provider at `var.github_token`, and delete the
    hardcoded value. Supply it from the environment:
    ```
@@ -16,12 +17,12 @@ already have.
    ```
    `terraform plan` should show **no changes**: you've only moved where the value comes from,
    and now `main.tf` is safe to commit.
-2. **Add your issues.** Add a `locals` block with an `issues` map (title => body), then create
+3. **Add your issues.** Add a `locals` block with an `issues` map (title => body), then create
    them all with a single `github_issue` resource using `for_each`. Set `repository` from
    `github_repository.workshop_app.name`, `title = each.key`, and `body = each.value`.
-3. **Add an output** for the repo URL (`github_repository.workshop_app.html_url`).
-4. `terraform apply`: check the issues on the repo, then `terraform output repo_url`.
-5. `terraform destroy`, then apply again. That create, destroy, improve, repeat loop is how you
+4. **Add an output** for the repo URL (go to the docs and find the appropriate repository resource attribute to use).
+5. `terraform apply`: check the issues on the repo, then `terraform output repo_url`.
+6. `terraform destroy`, then apply again. That create, destroy, improve, repeat loop is how you
    know the config is reusable and idempotent.
 
 ## Check your work
