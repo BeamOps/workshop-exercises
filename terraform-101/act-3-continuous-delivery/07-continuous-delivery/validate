@@ -1,0 +1,55 @@
+#!/usr/bin/env bash
+# Validates: terraform-101 / act-3 / 07-continuous-delivery
+# Checks the shared project (terraform-101/github-project): the repo-secrets
+# module, the AWS credential variables, and the CD workflow. Config-shape plus
+# terraform validate. The real payoff is the plan comment landing on your PR.
+ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && git rev-parse --show-toplevel)"
+source "$ROOT/bin/lib.sh"
+
+DIR="$ROOT/terraform-101/github-project"
+WORKFLOW="$DIR/.github/workflows/terraform-cd.yml"
+
+info "Checking your continuous delivery work (in github-project/)..."
+
+check_msg "terraform is installed" \
+  "install it or run 'mise install' in terraform-101/ (see 00-setup)" \
+  command -v terraform
+
+check_msg "the shared project exists (terraform-101/github-project/main.tf)" \
+  "create terraform-101/github-project/main.tf and work there" \
+  test -f "$DIR/main.tf"
+
+check_msg "you store the secrets with the repo-secrets module" \
+  "add a module block with source = \"./modules/repo-secrets\" instead of raw secret resources" \
+  grep -qE 'source[[:space:]]*=[[:space:]]*"\./modules/repo-secrets"' "$DIR"/*.tf
+
+declares_aws_vars() {
+  grep -qE 'variable[[:space:]]+"aws_access_key_id"' "$DIR"/*.tf &&
+    grep -qE 'variable[[:space:]]+"aws_secret_access_key"' "$DIR"/*.tf
+}
+check_msg "you declared the AWS credential variables" \
+  "add sensitive variables aws_access_key_id and aws_secret_access_key so CI can reach the backend" \
+  declares_aws_vars
+
+check_msg "the CD workflow exists (.github/workflows/terraform-cd.yml)" \
+  "add .github/workflows/terraform-cd.yml to the project (see solution/)" \
+  test -f "$WORKFLOW"
+
+plans_on_pr_applies_on_merge() {
+  grep -q 'dflook/terraform-plan' "$WORKFLOW" &&
+    grep -q 'dflook/terraform-apply' "$WORKFLOW" &&
+    grep -q 'pull_request' "$WORKFLOW"
+}
+check_msg "the workflow plans on PRs and applies on merge" \
+  "the workflow should run dflook/terraform-plan on pull_request and dflook/terraform-apply on push" \
+  plans_on_pr_applies_on_merge
+
+check_msg "your config is formatted (terraform fmt)" \
+  "run: terraform fmt" \
+  terraform -chdir="$DIR" fmt -check
+
+check_msg "terraform validate passes" \
+  "run: terraform init (it picks up the module), then terraform validate" \
+  terraform -chdir="$DIR" validate
+
+finish
