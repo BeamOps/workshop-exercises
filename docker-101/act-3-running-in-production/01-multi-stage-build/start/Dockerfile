@@ -13,7 +13,13 @@ COPY mix.exs mix.lock ./
 RUN mix deps.get --only prod
 RUN mix deps.compile
 
-COPY . .
+# Copy only what the release needs — never `COPY . .`, which would drag the host's
+# _build/ into this Linux image and cause "Exec format error" at runtime.
+COPY config config
+COPY lib lib
+COPY priv priv
+COPY assets assets
+COPY rel rel
 RUN mix compile
 RUN mix assets.deploy
 RUN mix release

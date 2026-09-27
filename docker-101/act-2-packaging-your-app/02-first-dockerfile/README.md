@@ -25,12 +25,15 @@ without copying anything into it.
      Docker looks for a file literally named `Dockerfile` in the build context.
    - **The last argument (`../../starter-app/starter_app`) is the build *context*** —
      the directory Docker hands to the daemon and that every `COPY` reads from. By
-     pointing it at the app, `COPY mix.exs mix.lock ./` and `COPY . .` copy *the app's*
-     files, while the Dockerfile itself stays here in the exercise. No copying needed.
+     pointing it at the app, the `COPY` lines read *the app's* files, while the
+     Dockerfile itself stays here in the exercise. No copying needed.
 
-   (The `.dockerignore` you added to the app in setup keeps `_build/`, `deps/` and
-   friends out of that context — so the build stays fast and never drags in a
-   host-built release.)
+   Notice the Dockerfile copies the source **one directory at a time**
+   (`COPY config config`, `COPY lib lib`, …) rather than `COPY . .`. That's
+   deliberate: your app's `_build/` holds a release compiled for **your host OS**
+   (you built one in the last exercise), and `COPY . .` would drag it into this
+   Linux image, so the container dies with "Exec format error". Naming the dirs
+   means only source ever crosses into the image.
 
 ## Check your work
 
@@ -39,9 +42,3 @@ From this exercise folder:
 ```sh
 ./validate
 ```
-
-## Debrief
-
-- What does `-f` do, and what exactly is the build *context*?
-- Why copy `mix.exs` / `mix.lock` and fetch deps *before* copying the rest of the code?
-- What does `mix release` produce, and what does the `CMD` run?

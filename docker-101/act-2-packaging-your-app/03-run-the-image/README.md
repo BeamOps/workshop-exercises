@@ -49,9 +49,3 @@ Leave the `starter` container running for the check.
 ```sh
 docker rm -f starter
 ```
-
-## Debrief
-
-- Why does the container need `SECRET_KEY_BASE` and `DATABASE_URL` at run time, not build time?
-- What's the difference between `docker exec … bash` and `bin/starter_app remote`?
-- What does publishing the port (`-p 4000:4000`) actually do?

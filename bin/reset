@@ -1,12 +1,25 @@
 #!/usr/bin/env bash
 # Remove containers, networks, volumes, and data dirs created by the Docker 101
 # exercises, so you can start a section from a clean slate. Safe to run any time.
-docker rm -f app app-2 db db2 workshop-shell >/dev/null 2>&1
+docker rm -f app app-2 app-no-port db db2 registry starter workshop-shell >/dev/null 2>&1
 docker network rm app-net >/dev/null 2>&1
 docker volume rm db-data >/dev/null 2>&1
+
+# Containers started from the starter-app image (any tag), in case one was run under
+# a name other than `starter`.
+for tag in $(docker images 'starter-app' --format '{{.Repository}}:{{.Tag}}' 2>/dev/null); do
+  ids=$(docker ps -aq --filter "ancestor=$tag" 2>/dev/null)
+  [ -n "$ids" ] && docker rm -f $ids >/dev/null 2>&1
+done
+
+# The OTP release exercise boots a release ON THE HOST (`bin/starter_app start|daemon`),
+# leaving a BEAM process that can hold port 4000. Kill ONLY that release, matched by its
+# unique path. We deliberately do NOT `pkill beam`, which would also kill your editor's
+# Elixir language server, your dev server, and every other Erlang/Elixir app running.
+pkill -f '_build/prod/rel/starter_app/' 2>/dev/null || true
 
 # bind-mount data dirs (an exercise's `-v ./pgdata:...` leaves a pgdata folder)
 root="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 find "$root" -type d -name pgdata -prune -exec rm -rf {} + 2>/dev/null
 
-echo "✓ cleaned up Docker 101 exercise containers, networks, volumes, and data dirs"
+echo "✓ cleaned up Docker 101 containers, networks, volumes, data dirs, and any host-run release"

@@ -43,9 +43,3 @@ Leave the registry running and the pulled image present for the check.
 docker rm -f registry
 docker rmi localhost:5001/starter-app:2.0
 ```
-
-## Debrief
-
-- What does the registry address in the tag (`localhost:5001/...`) tell Docker?
-- What changes when you push to Docker Hub or GHCR instead? (a real hostname, and a login)
-- Why tag with a version (`:2.0`) rather than relying on `:latest`?

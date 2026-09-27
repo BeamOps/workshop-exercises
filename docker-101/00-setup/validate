@@ -19,9 +19,9 @@ check_msg "the 'elixir' image is pulled" \
   "run: docker pull elixir" \
   image_exists elixir
 
-check_msg "the 'postgres:18' image is pulled" \
-  "run: docker pull postgres:18" \
-  image_exists postgres:18
+check_msg "the 'postgres:17' image is pulled" \
+  "run: docker pull postgres:17" \
+  image_exists postgres:17
 
 # Elixir toolchain on PATH (needed for the OTP release exercise, host-side).
 # We don't care HOW it was installed, only that it's reachable.

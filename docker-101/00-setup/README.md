@@ -47,7 +47,7 @@ So we're not all downloading at once on the day:
 
 ```
 docker pull elixir
-docker pull postgres:18
+docker pull postgres:17
 ```
 
 ## Check your work
