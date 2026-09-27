@@ -3,7 +3,7 @@
 **Goal:** publish a container's port so you can reach it from your browser, and
 connect containers on a network so they reach each other by name.
 
-We use `nginx` (as the app), `postgres:18` (as the db), and `busybox` (a tiny
+We use `nginx` (as the app), `postgres:17` (as the db), and `busybox` (a tiny
 image with a `ping` tool). No starter files.
 
 > **Start clean:** if you did an earlier exercise, run the repo's `bin/reset`
@@ -37,7 +37,7 @@ Containers only resolve each other by name on a **user-defined** network. Let's 
 
 8. Run Postgres named `db` on the default network for now:
    ```
-   docker run -d --name db -e POSTGRES_PASSWORD=password postgres:18
+   docker run -d --name db -e POSTGRES_PASSWORD=password postgres:17
    ```
 9. Try to reach it by name from another container. This **fails** with `bad address 'db'`, the default network gives no name resolution:
    ```
@@ -47,7 +47,7 @@ Containers only resolve each other by name on a **user-defined** network. Let's 
    ```
    docker rm -f db
    docker network create app-net
-   docker run -d --name db --network app-net -e POSTGRES_PASSWORD=password postgres:18
+   docker run -d --name db --network app-net -e POSTGRES_PASSWORD=password postgres:17
    ```
 11. Ping `db` by name from a container on the same network. Now it **works**:
    ```

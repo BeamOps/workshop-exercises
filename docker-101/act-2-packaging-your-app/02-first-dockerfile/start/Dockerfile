@@ -22,9 +22,17 @@ COPY ??? ???
 RUN mix deps.get --only prod
 RUN mix deps.compile
 
-# Now the rest of the source. Compile first — Phoenix 1.8 extracts colocated
-# JS/CSS during compilation, and the asset build imports it — then assets + release.
-COPY . .
+# Now the rest of the source. Copy only what the release needs, one dir at a time —
+# NOT `COPY . .`. Blindly copying everything drags your host's _build/ (a release
+# compiled for your laptop's OS) into this Linux image, and the container then dies
+# with "Exec format error". Naming the dirs means only source ever comes across.
+# Compile first — Phoenix 1.8 extracts colocated JS/CSS during compilation, and the
+# asset build imports it — then assets + release.
+COPY config config
+COPY lib lib
+COPY priv priv
+COPY assets assets
+COPY rel rel
 RUN mix compile
 RUN mix assets.deploy
 RUN mix release

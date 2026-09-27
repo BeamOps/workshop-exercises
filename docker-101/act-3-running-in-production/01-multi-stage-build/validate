@@ -17,6 +17,19 @@ check_msg "the runner copies the release out of the builder" \
   "COPY --from=builder /app/_build/prod/rel/starter_app ./" \
   grep -qiE '^COPY --from=builder' "$DF"
 
+# The builder copies source by naming dirs, never 'COPY . .' — otherwise the host's
+# _build/ leaks into the builder and the release copied into the runner is host-built.
+check_msg "the builder copies source explicitly, not with 'COPY . .'" \
+  "in the builder, copy only what the release needs (COPY config config, COPY lib lib, …), not COPY . ." \
+  bash -c "! grep -qE '^COPY[[:space:]]+\.[[:space:]]+\.' '$DF'"
+
+# The runner's CMD starts the release's server script. In the runner the release lives
+# at /app, so the server is /app/bin/server (a relative 'bin/server' with WORKDIR /app
+# works too). A wrong path only fails at 'docker run', so catch it here.
+check_msg "the runner CMD starts the server (bin/server)" \
+  "CMD should run the release server, e.g. CMD [\"/app/bin/server\"]" \
+  grep -qE '^CMD.*bin/server' "$DF"
+
 check_msg "the image starter-app:2.0 built" \
   "docker build -f start/Dockerfile -t starter-app:2.0 ../../starter-app/starter_app" \
   image_exists starter-app:2.0

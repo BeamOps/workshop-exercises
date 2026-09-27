@@ -15,8 +15,16 @@ check_msg "start/Dockerfile is filled in (no ??? left)" \
 
 # Deps copied before the source, so the deps layer stays cached (layer caching).
 check_msg "deps are copied before the source (layer caching)" \
-  "COPY mix.exs mix.lock ./ should come before COPY . ." \
+  "COPY mix.exs mix.lock ./ should come before the source copies" \
   grep -qE '^COPY[[:space:]]+mix\.exs[[:space:]]+mix\.lock' "$DF"
+
+# Source is copied by naming dirs, never 'COPY . .'. Blindly copying everything drags
+# the host's _build/ (a release built for the host OS) into the Linux image and the
+# container dies with "Exec format error". This guards against that at build-authoring
+# time; the boot check below proves it at runtime.
+check_msg "source is copied explicitly, not with 'COPY . .'" \
+  "copy only what the release needs (COPY config config, COPY lib lib, …), not COPY . ." \
+  bash -c "! grep -qE '^COPY[[:space:]]+\.[[:space:]]+\.' '$DF'"
 
 # Builds a release.
 check_msg "the Dockerfile builds a release" \
@@ -35,5 +43,13 @@ check_msg "CMD runs the release server (/app/_build/prod/rel/starter_app/bin/ser
 check_msg "the image starter-app:1.0 built" \
   "docker build -f start/Dockerfile -t starter-app:1.0 ../../starter-app/starter_app" \
   image_exists starter-app:1.0
+
+# The release actually boots inside the image. This is the real catch for a leaked
+# host _build/: 'version' loads the release and its native code, so an image built
+# from host artifacts fails here with "Exec format error" instead of surviving to
+# bite you at 'docker run' in the next exercise.
+check_msg "the release boots inside the image (no host _build leaked in)" \
+  "rebuild after copying source explicitly; a host-built _build/ causes 'Exec format error'" \
+  docker run --rm starter-app:1.0 /app/_build/prod/rel/starter_app/bin/starter_app version
 
 finish
