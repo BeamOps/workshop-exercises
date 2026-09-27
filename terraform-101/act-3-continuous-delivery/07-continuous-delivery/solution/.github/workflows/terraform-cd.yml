@@ -14,8 +14,8 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dflook/terraform-plan@v2
+      - uses: actions/checkout@v7
+      - uses: dflook/terraform-plan@v3
         with:
           path: .
         env:
@@ -32,8 +32,8 @@ jobs:
     if: github.event_name == 'push'
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: dflook/terraform-apply@v2
+      - uses: actions/checkout@v7
+      - uses: dflook/terraform-apply@v3
         with:
           path: .
         env:
