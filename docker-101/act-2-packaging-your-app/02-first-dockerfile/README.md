@@ -42,9 +42,3 @@ From this exercise folder:
 ```sh
 ./validate
 ```
-
-## Debrief
-
-- What does `-f` do, and what exactly is the build *context*?
-- Why copy `mix.exs` / `mix.lock` and fetch deps *before* copying the rest of the code?
-- What does `mix release` produce, and what does the `CMD` run?

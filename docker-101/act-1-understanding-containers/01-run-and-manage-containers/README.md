@@ -36,10 +36,3 @@ We use a Postgres container. No starter files, you work with the `docker` CLI.
 The check reads Docker's event log to confirm you actually ran through the
 lifecycle, created the container, stopped it, opened a shell, and removed it, so
 it's fine (expected, in fact) that nothing is left running at the end.
-
-## Debrief
-
-- What's the difference between an image and a container?
-- What happens to data inside a container when you stop it?
-- What happens when you remove it?
-- If you run `postgres:17` twice, do you get two separate databases?

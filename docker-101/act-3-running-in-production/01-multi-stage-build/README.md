@@ -31,9 +31,3 @@ your source in it. None of that is needed to *run* the release.
 ```sh
 ./validate
 ```
-
-## Debrief
-
-- What does `COPY --from=builder` copy, and what gets left behind?
-- Why is the runner image so much smaller?
-- Why is a smaller image worth it in a CI/CD pipeline?

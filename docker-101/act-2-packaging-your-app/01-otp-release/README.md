@@ -49,9 +49,3 @@ Acts 2 and 3 all build on it.
 ```sh
 ./validate
 ```
-
-## Debrief
-
-- What's actually inside the release? (your compiled app, its deps, and the Erlang VM)
-- Why can you run the binary on a machine with no Elixir installed?
-- Where does runtime config (database URL, secret key) come from, and when is it read?

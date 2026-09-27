@@ -43,9 +43,3 @@ From this exercise folder:
 ```sh
 cd start && docker compose down -v   # -v also removes the db-data volume
 ```
-
-## Debrief
-
-- How does the app reach the database at `db` instead of `localhost`?
-- What do the two `depends_on` conditions guarantee about start order?
-- What does the named volume give you across `docker compose down` / `up`?
