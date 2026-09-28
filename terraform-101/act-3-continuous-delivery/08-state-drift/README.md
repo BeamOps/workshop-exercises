@@ -8,7 +8,6 @@ pipeline refuses to apply a stale one.
 1. Open a PR that changes a resource (say, a label's colour), and gets its plan reviewed, **don't merge it yet**.
 2. **Click-ops that same resource** directly in the GitHub UI (change the colour to something else).
 3. Merge the PR. The apply job **re-plans, sees the drift, and fails** as the approved plan no longer matches reality.
-4. Discuss with the person/people sitting next to you how you fix this.
 
 ## Debrief
 
