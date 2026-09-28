@@ -9,7 +9,7 @@ Same project, **`terraform-101/github-project/main.tf`**, on top of the repo you
 
 1. Using the [provider docs](https://registry.terraform.io/providers/integrations/github/latest/docs),
    add a milestone resource to your configuration. Set its `repository` using the `name` attribute from your repository resource, and work out `owner` from the repo's `full_name`
-   attribute. (Tip: you'll have to use the `split` Terraform function here. We'll go into more detail on functions later on in the workshop).
+   attribute which has the format `org_name/repo_name` (Tip: you'll have to use the `split` Terraform function here to select the first element. We'll go into more detail on functions later on in the workshop).
 2. `terraform plan`: the milestone comes after the repo, which already exists in your state.
 3. `terraform apply`: check the milestone on the repo.
 4. `terraform destroy`: tear the whole project down. The milestone goes before the repo,
