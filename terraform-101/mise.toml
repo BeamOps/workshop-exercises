@@ -4,11 +4,7 @@
 #
 #   mise install
 #
-# Pins the Terraform CLI so everyone runs the same version the validators expect,
-# and installs the GitHub CLI (gh) used by the Act 1 finale's checks.
+# Pins the Terraform CLI so everyone runs the same version the validators expect.
+# Must be >= 1.10 for native S3 state locking (use_lockfile) in the remote-state exercise.
 [tools]
-terraform = "1.9.0"
-# GitHub CLI via the github backend (downloads the release, verifies GitHub
-# attestations + SLSA). The default aqua backend fails attestation checks for
-# cli/cli. gh's 2.x CLI surface is stable, so we track latest rather than pinning.
-"github:cli/cli" = { version = "latest", exe = "gh" }
+terraform = "1.16.4"

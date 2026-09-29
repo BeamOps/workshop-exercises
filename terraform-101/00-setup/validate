@@ -35,8 +35,4 @@ check_msg "the GitHub token authenticates to the API" \
   "GitHub rejected the token — check its scopes and expiry" \
   github_token_valid "$token"
 
-check_msg "the GitHub CLI (gh) is installed" \
-  "install gh: https://cli.github.com  (used by the last Act 1 exercise)" \
-  command -v gh
-
 finish
