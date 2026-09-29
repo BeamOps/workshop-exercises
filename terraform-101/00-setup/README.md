@@ -11,15 +11,15 @@ If you use [mise](https://mise.jdx.dev), this repo pins the tools for you. From 
 `terraform-101/` directory:
 
 ```
-mise install    # installs Terraform and gh
+mise install    # installs Terraform
 ```
 
-That covers steps 1 and 3 below — you still need a GitHub token (step 2). Prefer
+That covers step 1 below — you still need a GitHub token (step 2). Prefer
 to install things yourself? The per-OS instructions below work too.
 
 ## 1. Terraform
 
-Install the Terraform CLI (1.6 or newer).
+Install the Terraform CLI (1.10 or newer, required for native S3 state locking).
 
 | OS | Install |
 |----|---------|
@@ -51,17 +51,6 @@ you need a token Terraform can authenticate with.
 > We use `TF_VAR_github_token` — an environment variable Terraform automatically
 > maps to the `github_token` input variable — so nothing secret lands in a file.
 > The exercises also accept a gitignored `terraform.tfvars` if you prefer that.
-
-## 3. GitHub CLI
-
-The last Act 1 exercise does a real `apply` then `destroy` against GitHub, and its
-check uses the GitHub CLI.
-
-| OS | Install |
-|----|---------|
-| macOS | `brew install gh` |
-| Windows | `choco install gh` |
-| Linux | [cli.github.com](https://cli.github.com) |
 
 ## Check your work
 
